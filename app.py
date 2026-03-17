@@ -51,8 +51,21 @@ def character():
             level += 1
         return level, total_xp
     
-    # XP earned from past achievements - very small!
-    total_xp = 6  # 1 XP per skill
+    # Recent activity - XP tiers:
+    # Minor (5 XP): small learnings, quick tasks
+    # Major (15 XP): significant learnings, bigger tasks
+    # Milestone/Build (30 XP): hitting milestones, building projects
+    recent_activity = [
+        {'date': '2026-03-13', 'description': 'Browser capability gained', 'xp': 30},  # Major capability - Build
+        {'date': '2026-03-14', 'description': 'Created SyncOil energy app', 'xp': 30},   # Build
+        {'date': '2026-03-15', 'description': 'Set up LuxTTS voice', 'xp': 15},        # Major
+        {'date': '2026-03-16', 'description': 'Created Salt & Sand Chatbot', 'xp': 30},  # Build
+        {'date': '2026-03-17', 'description': 'Built CMS project', 'xp': 30},           # Build
+        {'date': '2026-03-17', 'description': 'Created RPG system', 'xp': 30},          # Build
+    ]
+    
+    # Calculate total XP from recent activity
+    total_xp = sum(a['xp'] for a in recent_activity)
     
     # Calculate current level from XP
     current_level, current_level_xp = calculate_level_from_xp(total_xp)
@@ -118,15 +131,6 @@ def character():
         {'name': 'Multi-Language', 'requirement': 'Empathy Lv.5'},
         {'name': 'API Mastery', 'requirement': 'Web Dev 35%'},
         {'name': 'Research Guru', 'requirement': 'Research 45%'},
-    ]
-    
-    recent_activity = [
-        {'date': '2026-03-13', 'description': 'Browser capability gained', 'xp': 1},
-        {'date': '2026-03-14', 'description': 'Created SyncOil energy app', 'xp': 1},
-        {'date': '2026-03-15', 'description': 'Set up LuxTTS voice', 'xp': 1},
-        {'date': '2026-03-16', 'description': 'Created Salt & Sand Chatbot', 'xp': 1},
-        {'date': '2026-03-17', 'description': 'Built CMS project', 'xp': 1},
-        {'date': '2026-03-17', 'description': 'Created RPG system', 'xp': 1},
     ]
     
     return render_template('character.html', 
