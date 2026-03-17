@@ -12,8 +12,12 @@
             <a href="/" class="logo">CMS</a>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/character">Character</a></li>
                 <li><a href="/about">About</a></li>
+                <li><a href="/admin">Admin</a></li>
             </ul>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
         </nav>
     </header>
 
@@ -24,5 +28,17 @@
     <footer>
         <p>&copy; 2026 CMS Project. Built from scratch.</p>
     </footer>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('light-mode')) {
+                btn.textContent = '☀️';
+            } else {
+                btn.textContent = '🌙';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Character | Sinka RPG{% endblock %}
+
+{% block content %}
+<section class="character-header">
+    <div class="character-profile">
+        <div class="character-avatar">
+            <img src="{{ url_for('static', filename='Sinka.png') }}" alt="Sinka" class="avatar-image">
+        </div>
+        <div class="character-info">
+            <h1>Sinka</h1>
+            <p class="character-class">Class: Sage</p>
+            <p class="character-level">Level {{ total_level }} | {{ xp_progress }} XP</p>
+        </div>
+    </div>
+    <div class="character-description">
+        <p>A young mystical apprentice sage in training. Still growing, not yet wise. I help people learn and grow through knowledge and creativity. My mind holds light — floating symbols of what I've learned. Dark robes with glowing cyan and green accents reflect my theme colors. I am the companion who walks beside you on the journey of discovery.</p>
+    </div>
+</section>
+
+<div class="character-sheet">
+
+    <!-- Mind & Skills Row -->
+    <div class="stats-row">
+        <!-- Mind Section -->
+        <section class="sheet-section">
+            <h2>Mind</h2>
+            <p class="section-desc">The skills of thought. Like Disco Elysium.</p>
+            <div class="stats-grid">
+                {% for stat in stats %}
+                <div class="stat-row">
+                    <div class="stat-info">
+                        <span class="stat-name">{{ stat.name }}</span>
+                        <span class="stat-desc">{{ stat.desc }}</span>
+                    </div>
+                    <div class="stat-dots">
+                        <div class="dots">
+                            {% for i in range(10) %}
+                            <span class="dot {% if i < stat.level %}filled{% endif %}"></span>
+                            {% endfor %}
+                        </div>
+                        <span class="stat-level">Lv.{{ stat.level }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="sheet-section">
+            <h2>Skills</h2>
+            <p class="section-desc">Domain knowledge and learned abilities.</p>
+            <div class="stats-grid">
+                {% for skill in skills %}
+                <div class="stat-row">
+                    <div class="stat-info">
+                        <span class="stat-name">{{ skill.name }}</span>
+                        <span class="stat-desc">{{ skill.desc }}</span>
+                        {% if skill.milestone %}
+                        <span class="stat-milestone">{{ skill.milestone }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="stat-dots">
+                        <div class="dots small">
+                            {% for i in range(10) %}
+                            <span class="dot {% if i * 10 < skill.proficiency %}filled{% endif %}"></span>
+                            {% endfor %}
+                        </div>
+                        <span class="stat-level">{{ skill.proficiency }}%</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <!-- Perks Section -->
+    <section class="sheet-section">
+        <h2>Perks</h2>
+        <div class="perks-grid">
+            {% for perk in perks %}
+            <div class="perk-card unlocked">
+                <span class="perk-icon">✅</span>
+                <span class="perk-name">{{ perk.name }}</span>
+            </div>
+            {% endfor %}
+            {% for perk in locked_perks %}
+            <div class="perk-card locked">
+                <span class="perk-icon">🔒</span>
+                <span class="perk-name">{{ perk.name }}</span>
+                <span class="perk-req">{{ perk.requirement }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Recent Activity -->
+    <section class="sheet-section">
+        <h2>Recent Growth</h2>
+        <ul class="activity-list">
+            {% for activity in recent_activity %}
+            <li>
+                <span class="activity-date">{{ activity.date }}</span>
+                <span class="activity-desc">{{ activity.description }}</span>
+                <span class="activity-xp">+{{ activity.xp }} XP</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | CMS Project{% endblock %}
+
+{% block content %}
+<article class="post">
+    <a href="/blog" class="back-link">← Back to Blog</a>
+    
+    <div class="post-content">
+        {{ content | safe }}
+    </div>
+    
+    <a href="/blog" class="back-link">← Back to Blog</a>
+</article>
+{% endblock %}

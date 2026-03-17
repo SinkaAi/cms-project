@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Login | CMS Project{% endblock %}
+
+{% block content %}
+<section class="login-section">
+    <h1>Admin Login</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="error-message">{{ messages[0][1] }}</div>
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST" class="login-form">
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn">Login</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
