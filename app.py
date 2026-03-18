@@ -62,6 +62,7 @@ def character():
         {'date': '2026-03-16', 'description': 'Created Salt & Sand Chatbot', 'xp': 30},  # Build
         {'date': '2026-03-17', 'description': 'Built CMS project', 'xp': 30},           # Build
         {'date': '2026-03-17', 'description': 'Created RPG system', 'xp': 30},          # Build
+        {'date': '2026-03-18', 'description': 'Built & deployed Magic Mirror app', 'xp': 90},  # Today's work!
     ]
     
     # Calculate total XP from recent activity
@@ -73,12 +74,17 @@ def character():
     
     # Mind stats - starting low
     stats = [
-        {'name': 'Encyclopedia', 'level': 1, 'xp': 0, 'desc': 'Just starting to learn'},
-        {'name': 'Memory', 'level': 1, 'xp': 0, 'desc': 'Basic recall'},
-        {'name': 'Empathy', 'level': 1, 'xp': 0, 'desc': 'Understanding people'},
-        {'name': 'Inland Empire', 'level': 1, 'xp': 0, 'desc': 'Creative thinking'},
-        {'name': 'Logic', 'level': 1, 'xp': 0, 'desc': 'Basic reasoning'},
+        {'name': 'Encyclopedia', 'level': 1, 'xp': 35, 'desc': 'Just starting to learn'},
+        {'name': 'Memory', 'level': 1, 'xp': 45, 'desc': 'Basic recall'},
+        {'name': 'Empathy', 'level': 1, 'xp': 40, 'desc': 'Understanding people'},
+        {'name': 'Inland Empire', 'level': 1, 'xp': 30, 'desc': 'Creative thinking'},
+        {'name': 'Logic', 'level': 1, 'xp': 50, 'desc': 'Basic reasoning'},
     ]
+    
+    # Add XP progress to Mind stats
+    for stat in stats:
+        stat['xp_percent'] = int((stat['xp'] / 100) * 100)
+        stat['xp_needed'] = 100
     
     # Skills with XP from actual achievements - STARTING LOW (1%)
     skills = []
@@ -91,6 +97,16 @@ def character():
         'Persuasion': {'xp': 1, 'desc': 'Helped with outreach'}
     }
     
+    # Load actual XP from xp-system.json
+    try:
+        with open('/home/vile/.openclaw/workspace/rpg/xp-system.json', 'r') as f:
+            rpg_data = json.load(f)
+        for skill_name in skill_xp:
+            if skill_name in rpg_data.get('skills', {}):
+                skill_xp[skill_name]['xp'] = rpg_data['skills'][skill_name].get('xp', 1)
+    except:
+        pass  # Keep defaults if file not found
+    
     # Calculate skill level and milestone perks
     skill_milestones = {
         25: 'Apprentice',
@@ -101,6 +117,8 @@ def character():
     
     for name, data in skill_xp.items():
         level, rem_xp = calculate_level_from_xp(data['xp'])
+        xp_needed = get_xp_for_level(level)
+        xp_percent = (rem_xp / xp_needed * 100) if xp_needed > 0 else 0
         # Proficiency: level 1 = 1%, level 2 = 6%, etc. (5% per level)
         proficiency = min(100, level * 5 + rem_xp // 20)
         
@@ -114,6 +132,8 @@ def character():
             'name': name,
             'proficiency': proficiency,
             'xp': rem_xp,
+            'xp_needed': xp_needed,
+            'xp_percent': int(xp_percent),
             'level': level,
             'milestone': milestone,
             'desc': data['desc']

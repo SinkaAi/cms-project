@@ -43,6 +43,13 @@
                         <span class="stat-level">Lv.{{ stat.level }}</span>
                     </div>
                 </div>
+                <!-- XP Progress Bar -->
+                <div class="xp-progress-container">
+                    <div class="xp-progress-bar">
+                        <div class="xp-progress-fill" style="width: {{ stat.xp_percent }}%"></div>
+                    </div>
+                    <span class="xp-text">{{ stat.xp }}/{{ stat.xp_needed }} XP to Lv.{{ stat.level + 1 }}</span>
+                </div>
                 {% endfor %}
             </div>
         </section>
@@ -67,8 +74,15 @@
                             <span class="dot {% if i * 10 < skill.proficiency %}filled{% endif %}"></span>
                             {% endfor %}
                         </div>
-                        <span class="stat-level">{{ skill.proficiency }}%</span>
+                        <span class="stat-level">Lv.{{ skill.level }}</span>
                     </div>
+                </div>
+                <!-- XP Progress Bar -->
+                <div class="xp-progress-container">
+                    <div class="xp-progress-bar">
+                        <div class="xp-progress-fill" style="width: {{ skill.xp_percent }}%"></div>
+                    </div>
+                    <span class="xp-text">{{ skill.xp }}/{{ skill.xp_needed }} XP to Lv.{{ skill.level + 1 }}</span>
                 </div>
                 {% endfor %}
             </div>
