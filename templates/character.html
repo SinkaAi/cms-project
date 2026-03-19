@@ -112,15 +112,17 @@
     <!-- Recent Activity -->
     <section class="sheet-section">
         <h2>Recent Growth</h2>
-        <ul class="activity-list">
-            {% for activity in recent_activity %}
-            <li>
-                <span class="activity-date">{{ activity.date }}</span>
-                <span class="activity-desc">{{ activity.description }}</span>
-                <span class="activity-xp">+{{ activity.xp }} XP</span>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="activity-scroll-container">
+            <ul class="activity-list">
+                {% for activity in recent_activity %}
+                <li>
+                    <span class="activity-date">{{ activity.date }}</span>
+                    <span class="activity-desc">{{ activity.description }}</span>
+                    <span class="activity-xp">+{{ activity.xp }} XP</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </section>
 </div>
 {% endblock %}

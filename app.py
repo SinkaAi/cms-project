@@ -63,6 +63,9 @@ def character():
         {'date': '2026-03-17', 'description': 'Built CMS project', 'xp': 30},           # Build
         {'date': '2026-03-17', 'description': 'Created RPG system', 'xp': 30},          # Build
         {'date': '2026-03-18', 'description': 'Built & deployed Magic Mirror app', 'xp': 90},  # Today's work!
+        {'date': '2026-03-19', 'description': 'Designed NEXUS logo with animated rings', 'xp': 15},
+        {'date': '2026-03-19', 'description': 'Created futuristic nav buttons', 'xp': 20},
+        {'date': '2026-03-19', 'description': 'Fixed & improved character sheet with scroll', 'xp': 10},
     ]
     
     # Calculate total XP from recent activity
@@ -161,7 +164,7 @@ def character():
                          total_level=current_level,
                          total_xp=total_xp,
                          xp_progress=f"{current_level_xp}/{xp_for_next}",
-                         recent_activity=recent_activity)
+                         recent_activity=list(reversed(recent_activity)))
 
 # Login
 @app.route('/login', methods=['GET', 'POST'])

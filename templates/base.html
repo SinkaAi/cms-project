@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CMS Project{% endblock %}</title>
+    <title>{% block title %}Nexus{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="scanline"></div>
     <header>
         <nav>
-            <a href="/" class="logo">CMS</a>
+            <a href="/" class="logo">
+                <span class="nexus-logo">
+                    <span class="nexus-ring"></span>
+                    <span class="nexus-text">NEXUS</span>
+                </span>
+            </a>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/blog">Blog</a></li>
@@ -27,19 +32,35 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 CMS Project. Built from scratch.</p>
+        <p>&copy; 2026 <span class="footer-nexus">NEXUS</span>. Built with 🧠 by Sinka.</p>
     </footer>
 
     <script>
+        // Check for saved theme preference on load and set button accordingly
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.querySelector('.theme-toggle').textContent = '☀️';
+        }
+        
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const btn = document.querySelector('.theme-toggle');
             if (document.body.classList.contains('light-mode')) {
                 btn.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
             } else {
                 btn.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
             }
         }
+        
+        // Highlight current page in nav
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
         
         // Image Slider
         let currentSlide = 0;
