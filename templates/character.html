@@ -92,16 +92,18 @@
     <!-- Perks Section -->
     <section class="sheet-section">
         <h2>Perks</h2>
+        <p class="section-desc">Abilities you've unlocked. Hover to activate!</p>
         <div class="perks-grid">
             {% for perk in perks %}
             <div class="perk-card unlocked">
-                <span class="perk-icon">✅</span>
+                <div class="perk-skill-icon">{{ perk.icon }}</div>
                 <span class="perk-name">{{ perk.name }}</span>
+                <span class="perk-desc">{{ perk.desc }}</span>
             </div>
             {% endfor %}
             {% for perk in locked_perks %}
             <div class="perk-card locked">
-                <span class="perk-icon">🔒</span>
+                <div class="perk-skill-icon locked-icon">{{ perk.icon }}</div>
                 <span class="perk-name">{{ perk.name }}</span>
                 <span class="perk-req">{{ perk.requirement }}</span>
             </div>

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Courses | DKCGI{% endblock %}
+
+{% block content %}
+<style>
+    .courses-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .courses-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+    .courses-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    .course-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .course-card:hover {
+        border-color: var(--border-hover);
+        transform: translateY(-2px);
+    }
+    .course-thumb {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+    .course-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    .course-card:hover .course-thumb img {
+        transform: scale(1.05);
+    }
+    .course-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .course-level {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--bg-elevated);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+    .course-content {
+        padding: 1.5rem;
+    }
+    .course-content h2 {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+    }
+    .course-content .short-desc {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+    .course-meta {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+    .course-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+    .course-features {
+        margin-bottom: 1.5rem;
+    }
+    .course-features h4 {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .course-features ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .course-features li {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+    .course-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    .course-price {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+    .course-price .current {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    .course-price .original {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        text-decoration: line-through;
+    }
+    .course-btn {
+        display: inline-block;
+        padding: 12px 28px;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        color: var(--text-secondary) !important;
+        font-weight: 500;
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transition: all 0.15s ease;
+    }
+    .course-btn:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        color: var(--text-primary) !important;
+        transform: translateY(-1px);
+    }
+    @media (max-width: 768px) {
+        .courses-grid {
+            grid-template-columns: 1fr;
+        }
+        .courses-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+<div class="container">
+    <div class="courses-header">
+        <h1>🎓 Premium Courses</h1>
+        <p>Master architectural visualization with step-by-step video tutorials. From beginner to advanced — real-world techniques used in production.</p>
+    </div>
+
+    <div class="courses-grid">
+        {% for course in courses %}
+        <article class="course-card">
+            <div class="course-thumb">
+                <img src="{{ course.thumbnail }}" alt="{{ course.title }}">
+                {% if course.badge %}
+                <span class="course-badge">{{ course.badge }}</span>
+                {% endif %}
+                <span class="course-level">{{ course.level }}</span>
+            </div>
+            <div class="course-content">
+                <h2>{{ course.title }}</h2>
+                <p class="short-desc">{{ course.short_desc }}</p>
+                
+                <div class="course-meta">
+                    <span>⏱️ {{ course.duration }}</span>
+                    <span>📚 {{ course.lectures }} lectures</span>
+                </div>
+                
+                <div class="course-features">
+                    <h4>What you'll learn</h4>
+                    <ul>
+                        {% for feature in course.features %}
+                        <li>{{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-price">
+                        <span class="current">{{ course.price }}</span>
+                        <span class="original">{{ course.original_price }}</span>
+                    </div>
+                    <a href="{{ course.url }}" target="_blank" class="course-btn">Enroll Now →</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

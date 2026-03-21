@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{% if query %}Search: {{ query }}{% else %}Search{% endif %} | DKCGI{% endblock %}
+
+{% block content %}
+<section class="blog-header">
+    <h1>{% if query %}Search Results{% else %}Search{% endif %}</h1>
+    {% if query %}
+    <p>Showing results for "{{ query }}"</p>
+    {% else %}
+    <p>Enter a search term to find posts</p>
+    {% endif %}
+    
+    <!-- Search Form -->
+    <form action="/search" method="get" class="search-form">
+        <input type="text" name="q" placeholder="Search posts..." value="{{ query }}">
+        <button type="submit" class="btn">Search</button>
+    </form>
+</section>
+
+{% if query %}
+<section class="posts">
+    {% if results %}
+    <p class="results-count">Found {{ results|length }} result{% if results|length != 1 %}s{% endif %}</p>
+    
+    {% for post in results %}
+    <article class="post-card">
+        {% if post.thumbnail %}
+        <div class="post-thumb">
+            <a href="/blog/{{ post.slug }}">
+                <img src="{{ post.thumbnail }}" alt="{{ post.title }}">
+            </a>
+        </div>
+        {% endif %}
+        <div class="post-content">
+            <h3><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
+            {% if post.categories %}
+            <div class="post-categories">
+                {% for cat in post.categories %}
+                <a href="/category/{{ cat|urlencode }}" class="category-badge">{{ cat }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <p>{{ post.excerpt }}</p>
+            <a href="/blog/{{ post.slug }}" class="read-more">Read more →</a>
+        </div>
+    </article>
+    {% endfor %}
+    {% else %}
+    <p class="no-posts">No posts found matching "{{ query }}". Try a different search term.</p>
+    {% endif %}
+</section>
+{% endif %}
+
+<style>
+/* Search Page */
+.search-form {
+    margin-top: var(--space-4);
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-form input {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    min-width: 250px;
+    font-family: var(--font-sans);
+}
+
+.search-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.search-form button {
+    padding: var(--space-3) var(--space-6);
+}
+
+.results-count {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+</style>
+{% endblock %}

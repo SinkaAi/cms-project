@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Post | DKCGI</title>
+    <title>Edit Post | DKCGI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         :root {
@@ -62,11 +62,13 @@
             top: 0;
             left: 0;
             bottom: 0;
-            z-index: 1000;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-header {
-            padding: 1.5rem;
+            padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--border);
         }
 
@@ -74,37 +76,15 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--accent);
             text-decoration: none;
         }
 
-        .nexus-ring-small {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--accent);
-            border-radius: 50%;
-            position: relative;
-            animation: nexus-spin 3s linear infinite;
-        }
-
-        .nexus-ring-small::before {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            border: 2px solid transparent;
-            border-top-color: #4ade80;
-            border-radius: 50%;
-        }
-
-        @keyframes nexus-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
         .sidebar-nav {
             padding: 1rem 0;
+            flex: 1;
             display: flex;
             flex-direction: column;
         }
@@ -113,28 +93,30 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.85rem 1.5rem;
+            padding: 0.7rem 1.5rem;
             color: var(--text-secondary);
             text-decoration: none;
             transition: all 0.15s ease;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             border-left: 3px solid transparent;
         }
 
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
         }
 
         .nav-item.active {
-            background: rgba(0, 217, 255, 0.1);
             color: var(--accent);
+            background: var(--accent-muted);
             border-left-color: var(--accent);
         }
 
-        .nav-icon { font-size: 1.1rem; width: 24px; text-align: center; }
+        .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
 
         .sidebar-footer {
-            padding: 1rem 0;
+            padding: 1rem 1.5rem;
             border-top: 1px solid var(--border);
         }
 
@@ -142,6 +124,7 @@
             flex: 1;
             margin-left: 240px;
             padding: 2rem 2.5rem;
+            max-width: 1200px;
         }
 
         .page-header {
@@ -153,45 +136,47 @@
 
         .page-header h1 {
             font-size: 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
             margin: 0;
+            letter-spacing: -0.02em;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.65rem 1.25rem;
-            background: rgba(255, 255, 255, 0.05);
+            padding: 0.6rem 1.25rem;
+            background: var(--bg-elevated);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             text-decoration: none;
             transition: all 0.15s ease;
             cursor: pointer;
         }
 
         .btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #4ade80) !important;
-            color: #000 !important;
+            background: var(--accent) !important;
+            color: #fff !important;
             border: none !important;
             font-weight: 600;
         }
 
         .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.25);
+            background: var(--accent-hover) !important;
         }
 
         .post-form {
-            background: rgba(255, 255, 255, 0.02);
+            background: var(--bg-surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             padding: 2rem;
         }
 
@@ -203,20 +188,22 @@
             display: block;
             font-weight: 500;
             margin-bottom: 0.5rem;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            color: var(--text-primary);
         }
 
         .form-group input[type="text"],
         .form-group input[type="url"],
         .form-group select {
             width: 100%;
-            padding: 0.75rem 1rem;
-            background: rgba(0, 0, 0, 0.2);
+            padding: 0.625rem 0.875rem;
+            background: var(--bg-input);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            font-family: inherit;
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: var(--font-sans);
+            transition: border-color 0.15s ease;
         }
 
         .form-group input:focus,
@@ -309,11 +296,6 @@
             overflow-y: auto;
         }
 
-        .editor-content:empty:before {
-            content: 'Start writing your post...';
-            color: var(--text-muted);
-        }
-
         .editor-content h1 { font-size: 1.75rem; margin: 1rem 0 0.5rem; }
         .editor-content h2 { font-size: 1.5rem; margin: 1rem 0 0.5rem; }
         .editor-content h3 { font-size: 1.25rem; margin: 1rem 0 0.5rem; }
@@ -351,7 +333,6 @@
             padding: 0;
         }
 
-        /* Hidden textarea for form submission */
         #content-source {
             display: none;
         }
@@ -373,7 +354,6 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Link dialog */
         .dialog-overlay {
             display: none;
             position: fixed;
@@ -439,7 +419,6 @@
 </head>
 <body>
     <div class="admin-layout">
-        <!-- Sidebar -->
         <aside class="admin-sidebar">
             <div class="sidebar-header">
                 <a href="/" class="sidebar-logo">
@@ -452,7 +431,7 @@
                     <span class="nav-icon">📊</span>
                     <span>Dashboard</span>
                 </a>
-                <a href="/admin/new" class="nav-item active">
+                <a href="/admin/new" class="nav-item">
                     <span class="nav-icon">✏️</span>
                     <span>New Post</span>
                 </a>
@@ -477,10 +456,9 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="admin-main">
             <div class="page-header">
-                <h1>Create New Post</h1>
+                <h1>Edit Post</h1>
                 <a href="/admin" class="btn">← Back to Admin</a>
             </div>
 
@@ -491,28 +469,28 @@
             <form method="POST" class="post-form" onsubmit="updateContentSource()">
                 <div class="form-group">
                     <label for="title">Title</label>
-                    <input type="text" id="title" name="title" placeholder="Enter post title" required>
+                    <input type="text" id="title" name="title" value="{{ title }}" placeholder="Enter post title" required>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="categories">Categories</label>
-                        <input type="text" id="categories" name="categories" placeholder="3DS Max, Lighting, V-Ray">
+                        <input type="text" id="categories" name="categories" value="{{ categories }}" placeholder="3DS Max, Lighting, V-Ray">
                         <small>Comma-separated list of categories</small>
                     </div>
                     
                     <div class="form-group">
                         <label for="status">Status</label>
                         <select id="status" name="status">
-                            <option value="published">Published</option>
-                            <option value="draft">Draft</option>
+                            <option value="published" {% if status == 'published' %}selected{% endif %}>Published</option>
+                            <option value="draft" {% if status == 'draft' %}selected{% endif %}>Draft</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="form-group checkbox-group">
                     <label>
-                        <input type="checkbox" name="featured" value="true">
+                        <input type="checkbox" name="featured" value="true" {% if featured %}checked{% endif %}>
                         ⭐ Mark as Featured Post
                     </label>
                     <small>Featured posts are highlighted on the homepage</small>
@@ -520,7 +498,7 @@
                 
                 <div class="form-group">
                     <label for="thumbnail">Thumbnail URL</label>
-                    <input type="url" id="thumbnail" name="thumbnail" placeholder="https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg">
+                    <input type="url" id="thumbnail" name="thumbnail" value="{{ thumbnail }}" placeholder="https://img.youtube.com/vi/VIDEO_ID/maxresdefault.jpg">
                     <small>YouTube video thumbnail URL (optional)</small>
                 </div>
                 
@@ -560,21 +538,20 @@
                                 <button type="button" class="toolbar-btn" data-format="redo" title="Redo">↪</button>
                             </div>
                         </div>
-                        <div class="editor-content" id="editor" contenteditable="true"></div>
+                        <div class="editor-content" id="editor" contenteditable="true">{{ content|safe }}</div>
                     </div>
                     <textarea id="content-source" name="content"></textarea>
                     <small>Use the toolbar above to format your content, or paste YouTube video URLs directly</small>
                 </div>
                 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Publish Post</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                     <a href="/admin" class="btn">Cancel</a>
                 </div>
             </form>
         </main>
     </div>
 
-    <!-- Link Dialog -->
     <div class="dialog-overlay" id="linkDialog">
         <div class="dialog">
             <h3>Insert Link</h3>
@@ -590,11 +567,10 @@
     <script>
         const editor = document.getElementById('editor');
         
-        // Toolbar button handlers
         document.querySelectorAll('.toolbar-btn[data-format]').forEach(btn => {
             btn.addEventListener('click', function() {
                 const format = this.dataset.format;
-                if (format === 'link' || format === 'image') return; // handled separately
+                if (format === 'link' || format === 'image') return;
                 formatText(format);
             });
         });
@@ -634,7 +610,6 @@
             const text = document.getElementById('linkText').value || url;
             if (url) {
                 document.execCommand('createLink', false, url);
-                // Update link text if selected
                 const selection = window.getSelection();
                 if (selection.rangeCount > 0 && selection.toString()) {
                     const range = selection.getRangeAt(0);
@@ -667,7 +642,6 @@
         editor.addEventListener('keyup', updateToolbarState);
         editor.addEventListener('mouseup', updateToolbarState);
 
-        // Keyboard shortcuts
         editor.addEventListener('keydown', function(e) {
             if (e.ctrlKey || e.metaKey) {
                 switch(e.key.toLowerCase()) {
@@ -678,21 +652,18 @@
             }
         });
 
-        // Handle paste - convert to plain text or preserve formatting
-        editor.addEventListener('paste', function(e) {
-            // Allow HTML paste for now
-        });
-
         function updateContentSource() {
             document.getElementById('content-source').value = editor.innerHTML;
         }
 
-        // Submit form on Ctrl+Enter
         editor.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                 document.querySelector('.post-form').submit();
             }
         });
+
+        // Initialize editor content
+        updateContentSource();
     </script>
 </body>
 </html>

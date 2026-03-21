@@ -3,27 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Nexus{% endblock %}</title>
+    <title>{% block title %}DKCGI{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+    .site-logo {
+        font-family: var(--font-sans);
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-primary);
+    }
+    .site-logo::after {
+        content: '';
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: var(--text-muted);
+        border-radius: 50%;
+        margin-left: 8px;
+        vertical-align: middle;
+        position: relative;
+        top: -2px;
+        opacity: 0.6;
+    }
+    </style>
 </head>
 <body>
-    <div class="scanline"></div>
-    <header>
-        <nav>
-            <a href="/" class="logo">
-                <span class="nexus-logo">
-                    <span class="nexus-ring"></span>
-                    <span class="nexus-text">NEXUS</span>
-                </span>
+    <header class="site-header">
+        <nav class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="site-logo">DKCGI</span>
             </a>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/blog">Blog</a></li>
-                <li><a href="/character">Character</a></li>
-                <li><a href="/about">About</a></li>
+                <li><a href="/courses">Courses</a></li>
+                <li><a href="/contact">Contact</a></li>
                 <li><a href="/admin">Admin</a></li>
             </ul>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            <div class="nav-right">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <span class="toggle-label">Dark</span>
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -32,27 +57,47 @@
     </main>
 
     <footer>
-        <p>&copy; 2026 <span class="footer-nexus">NEXUS</span>. Built with 🧠 by Sinka.</p>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <span class="footer-logo">DKCGI</span>
+                <p>Learn 3D CGI with Denis Keman.<br>3ds Max, V-Ray, and beyond.</p>
+            </div>
+            <div class="footer-nav">
+                <span class="footer-heading">Navigate</span>
+                <a href="/">Home</a>
+                <a href="/blog">Blog</a>
+                <a href="/courses">Courses</a>
+                <a href="/contact">Contact</a>
+            </div>
+            <div class="footer-social">
+                <span class="footer-heading">Connect</span>
+                <a href="https://youtube.com" target="_blank">YouTube</a>
+                <a href="https://github.com" target="_blank">GitHub</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 DKCGI. Built by hand from scratch.</p>
+        </div>
     </footer>
 
     <script>
-        // Check for saved theme preference on load and set button accordingly
+        // Check for saved theme preference on load
         if (localStorage.getItem('theme') === 'light') {
             document.body.classList.add('light-mode');
-            document.querySelector('.theme-toggle').textContent = '☀️';
         }
         
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
-            const btn = document.querySelector('.theme-toggle');
-            if (document.body.classList.contains('light-mode')) {
-                btn.textContent = '☀️';
-                localStorage.setItem('theme', 'light');
-            } else {
-                btn.textContent = '🌙';
-                localStorage.setItem('theme', 'dark');
-            }
+            localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+            updateToggleLabel();
         }
+        
+        // Show correct toggle label
+        function updateToggleLabel() {
+            const isLight = document.body.classList.contains('light-mode');
+            document.querySelector('.toggle-label').textContent = isLight ? 'Dark' : 'Light';
+        }
+        updateToggleLabel();
         
         // Highlight current page in nav
         const currentPath = window.location.pathname;

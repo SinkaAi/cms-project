@@ -1,43 +1,705 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin | DKCGI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        :root {
+            /* Use global CSS variables — same as the public site */
+            --bg-base: #0C0C0C;
+            --bg-surface: #151515;
+            --bg-elevated: #1C1C1C;
+            --bg-input: #1A1A1A;
+            --border: #222222;
+            --border-hover: #333333;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --accent: #FF6363;
+            --accent-hover: #FF8080;
+            --accent-muted: #2D1F1F;
+            --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
 
-{% block title %}Admin | CMS Project{% endblock %}
+        .light-mode {
+            --bg-base: #FAFAF8;
+            --bg-surface: #FFFFFF;
+            --bg-elevated: #F5F5F3;
+            --bg-input: #FAFAF8;
+            --border: #E8E8E6;
+            --border-hover: #D0D0CC;
+            --text-primary: #1A1A1A;
+            --text-secondary: rgba(0, 0, 0, 0.7);
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --accent: #E54545;
+            --accent-hover: #D13636;
+            --accent-muted: #FDF0F0;
+        }
 
-{% block content %}
-<section class="admin-header">
-    <h1>Admin Panel</h1>
-    <p>Manage your blog posts</p>
-</section>
+        body {
+            background: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            margin: 0;
+            line-height: 1.6;
+        }
 
-<section class="admin-actions">
-    <a href="/admin/new" class="btn">➕ New Post</a>
-    <a href="/logout" class="btn btn-secondary">Logout</a>
-    <a href="/" class="btn btn-secondary">← Back to Site</a>
-</section>
+        /* Admin Sidebar */
+        .admin-sidebar {
+            width: 240px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
 
-<section class="admin-posts">
-    <h2>Existing Posts</h2>
-    {% if posts %}
-    <table class="posts-table">
-        <thead>
-            <tr>
-                <th>Filename</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for post in posts %}
-            <tr>
-                <td>{{ post.filename }}</td>
-                <td>
-                    <a href="/blog/{{ post.slug }}" class="btn-small">View</a>
-                    <a href="/admin/delete/{{ post.filename }}" class="btn-small btn-danger" onclick="return confirm('Delete this post?')">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="no-posts">No posts yet. Create your first one!</p>
-    {% endif %}
-</section>
-{% endblock %}
+        .sidebar-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .light-mode .nav-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+            background: var(--accent-muted);
+            border-left-color: var(--accent);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.15s ease;
+        }
+
+        .sidebar-footer a:hover {
+            color: var(--text-secondary);
+        }
+
+        .admin-layout {
+            position: relative;
+            min-height: 100vh;
+            padding-left: 240px;
+        }
+
+        .admin-main {
+            padding: 2rem 2.5rem;
+            max-width: 1200px;
+        }
+
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-topbar h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            background: var(--accent) !important;
+            color: #fff !important;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            transition: background 0.15s ease;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover) !important;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card-admin {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            transition: border-color 0.2s ease;
+        }
+
+        .stat-card-admin .stat-icon {
+            font-size: 1.75rem;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-info .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-info .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Posts Section */
+        .admin-posts-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .section-header .count {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .bulk-select {
+            padding: 0.5rem 1rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .btn-apply {
+            padding: 0.5rem 1rem;
+            background: var(--accent-muted);
+            border: 1px solid rgba(255, 99, 99, 0.25);
+            border-radius: 6px;
+            color: var(--accent);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-apply:hover {
+            background: rgba(255, 99, 99, 0.1);
+        }
+
+        /* Admin Tables */
+        .posts-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .posts-table-admin {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .posts-table-admin th,
+        .posts-table-admin td {
+            padding: 0.875rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .posts-table-admin th {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .posts-table-admin tr:last-child td {
+            border-bottom: none;
+        }
+
+        .posts-table-admin tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .light-mode .posts-table-admin tr:hover td {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .posts-table-admin td {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .col-checkbox { width: 40px; }
+        .col-status { width: 90px; }
+        .col-categories { width: 180px; }
+        .col-views { width: 70px; }
+        .col-date { width: 120px; }
+        .col-actions { width: 100px; }
+
+        .post-title-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-title {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .featured-badge {
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-published {
+            background: rgba(74, 222, 128, 0.12);
+            color: #4ade80;
+        }
+
+        .status-draft {
+            background: rgba(255, 176, 0, 0.12);
+            color: #ffb000;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            margin: 0.1rem;
+            background: var(--accent-muted);
+            border: 1px solid rgba(255, 99, 99, 0.15);
+            border-radius: var(--radius-sm);
+            font-size: 0.65rem;
+            color: var(--accent);
+        }
+
+        .light-mode .category-tag {
+            background: var(--accent-muted);
+            border-color: rgba(229, 69, 69, 0.15);
+            color: var(--accent);
+        }
+
+        .col-views {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .col-date {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            font-size: 0.85rem;
+        }
+
+        .action-btn.view {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+        }
+
+        .action-btn.view:hover {
+            background: rgba(74, 222, 128, 0.2);
+        }
+
+        .action-btn.edit {
+            background: var(--accent-muted);
+            color: var(--accent);
+        }
+
+        .action-btn.edit:hover {
+            background: rgba(255, 99, 99, 0.1);
+        }
+
+        .action-btn.delete {
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+        }
+
+        .action-btn.delete:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        /* Admin Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="url"],
+        .form-group input[type="email"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0.625rem 0.875rem;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            transition: border-color 0.15s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-group small {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.375rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding-top: 0.5rem;
+        }
+
+        /* Small buttons */
+        .btn-small {
+            display: inline-flex;
+            padding: 0.3rem 0.75rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary) !important;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-small:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary) !important;
+        }
+
+        .btn-danger {
+            color: #f87171 !important;
+            border-color: rgba(248, 113, 113, 0.3) !important;
+        }
+
+        .btn-danger:hover {
+            background: rgba(248, 113, 113, 0.1) !important;
+            border-color: #f87171 !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .admin-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .admin-sidebar {
+                width: 60px;
+            }
+            .sidebar-header,
+            .nav-item span {
+                display: none;
+            }
+            .nav-item {
+                justify-content: center;
+                padding: 1rem;
+            }
+            .admin-layout {
+                padding-left: 60px;
+            }
+            .admin-main {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <span class="nexus-ring-small"></span>
+                    <span>DKCGI</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/admin" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/new" class="nav-item">
+                    <span class="nav-icon">✏️</span>
+                    <span>New Post</span>
+                </a>
+                <a href="/admin/pages" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Pages</span>
+                </a>
+                <a href="/admin/media" class="nav-item">
+                    <span class="nav-icon">🖼️</span>
+                    <span>Media</span>
+                </a>
+                <a href="/admin/settings" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="/" class="nav-item">
+                    <span class="nav-icon">🌐</span>
+                    <span>View Site</span>
+                </a>
+                <a href="/logout" class="nav-item">
+                    <span class="nav-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Top Bar -->
+            <header class="admin-topbar">
+                <h1>Dashboard</h1>
+                <a href="/admin/new" class="btn-primary">➕ New Post</a>
+            </header>
+            
+            <!-- Stats Cards -->
+            <section class="admin-stats">
+                <div class="stat-card-admin">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ total_posts }}</span>
+                        <span class="stat-label">Posts</span>
+                    </div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-icon">👁️</div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ total_views }}</span>
+                        <span class="stat-label">Total Views</span>
+                    </div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-icon">📁</div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ total_categories }}</span>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-icon">📧</div>
+                    <div class="stat-info">
+                        <span class="stat-number">{{ total_subscribers }}</span>
+                        <span class="stat-label">Subscribers</span>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Posts Table -->
+            <section class="admin-posts-section">
+                <div class="section-header">
+                    <h2>All Posts <span class="count">({{ posts|length }})</span></h2>
+                    <div class="bulk-actions">
+                        <select class="bulk-select">
+                            <option>Bulk Actions</option>
+                            <option value="delete">Delete</option>
+                        </select>
+                        <button class="btn-apply">Apply</button>
+                    </div>
+                </div>
+                
+                <div class="posts-table-wrapper">
+                    <table class="posts-table-admin">
+                        <thead>
+                            <tr>
+                                <th class="col-checkbox"><input type="checkbox" id="select-all"></th>
+                                <th class="col-title">Title</th>
+                                <th class="col-status">Status</th>
+                                <th class="col-categories">Categories</th>
+                                <th class="col-views">Views</th>
+                                <th class="col-date">Date</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for post in posts %}
+                            <tr>
+                                <td class="col-checkbox"><input type="checkbox" class="post-checkbox"></td>
+                                <td class="col-title">
+                                    <div class="post-title-cell">
+                                        <span class="post-title">{{ post.title }}</span>
+                                        {% if post.is_featured %}<span class="featured-badge">⭐</span>{% endif %}
+                                    </div>
+                                </td>
+                                <td class="col-status">
+                                    <span class="status-badge status-{{ post.status }}">{{ post.status }}</span>
+                                </td>
+                                <td class="col-categories">
+                                    {% for cat in post.categories[:3] %}
+                                    <span class="category-tag">{{ cat }}</span>
+                                    {% endfor %}
+                                </td>
+                                <td class="col-views">{{ post.views }}</td>
+                                <td class="col-date">{{ post.date }}</td>
+                                <td class="col-actions">
+                                    {% if post.status == 'published' %}
+                                    <a href="/blog/{{ post.slug }}" class="action-btn view" title="View">👁️</a>
+                                    {% endif %}
+                                    <a href="/admin/edit/{{ post.slug }}" class="action-btn edit" title="Edit">✏️</a>
+                                    <a href="/admin/delete/{{ post.filename }}" class="action-btn delete" title="Delete" onclick="return confirm('Delete &quot;{{ post.title }}&quot;?')">🗑️</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('select-all')?.addEventListener('change', function() {
+            document.querySelectorAll('.post-checkbox').forEach(cb => cb.checked = this.checked);
+        });
+    </script>
+</body>
+</html>

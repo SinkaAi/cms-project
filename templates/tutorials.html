@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Tutorials - DKCGI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="sheet-section">
+        <h1>🎬 CGI Tutorials</h1>
+        <p class="intro">Master the art of 3D visualization with hands-on tutorials covering the entire production pipeline.</p>
+        
+        <div class="tutorials-grid">
+            {% for category in categories %}
+            <div class="tutorial-card">
+                <div class="tutorial-icon">{{ category.icon }}</div>
+                <h2>{{ category.name }}</h2>
+                <p>{{ category.desc }}</p>
+                <a href="#" class="btn">Coming Soon</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <section class="sheet-section">
+        <h2>📺 Latest Tutorial</h2>
+        <div class="youtube-embed">
+            <div class="placeholder-video">
+                <span>YouTube videos will appear here</span>
+            </div>
+        </div>
+    </section>
+    
+    <section class="sheet-section">
+        <h2>💎 Premium Courses</h2>
+        <p>Get full courses with step-by-step guidance on Gumroad.</p>
+        <a href="https://gumroad.com/l/PAAah" target="_blank" class="btn">View Courses</a>
+    </section>
+</div>
+{% endblock %}

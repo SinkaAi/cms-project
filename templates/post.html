@@ -1,15 +1,495 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} | CMS Project{% endblock %}
+{% block title %}{{ title }} | DKCGI{% endblock %}
 
 {% block content %}
 <article class="post">
     <a href="/blog" class="back-link">← Back to Blog</a>
     
+    <!-- Glass Container for Post Content -->
+    <div class="post-glass-container">
+    
+    {% if categories %}
+    <div class="post-categories">
+        {% for cat in categories %}
+        <a href="/category/{{ cat|urlencode }}" class="category-badge">{{ cat }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
     <div class="post-content">
         {{ content | safe }}
     </div>
     
+    {% if categories %}
+    <div class="post-categories">
+        {% for cat in categories %}
+        <a href="/category/{{ cat|urlencode }}" class="category-badge">{{ cat }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    </div><!-- End Glass Container -->
+    
+    <!-- Author Bio Box -->
+    <div class="author-bio">
+        <div class="author-avatar">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--text-muted);stop-opacity:0.5" />
+                        <stop offset="100%" style="stop-color:var(--text-muted);stop-opacity:0.3" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="48" fill="url(#avatarGrad)"/>
+                <circle cx="50" cy="38" r="18" fill="var(--bg-elevated)" opacity="0.3"/>
+                <ellipse cx="50" cy="75" rx="28" ry="20" fill="var(--bg-elevated)" opacity="0.3"/>
+            </svg>
+        </div>
+        <div class="author-info">
+            <h4 class="author-name">Denis Keman</h4>
+            <p class="author-role">3D CGI Artist & Educator</p>
+            <p class="author-bio-text">Creator of dkcgi.net tutorials, helping people learn 3ds Max and V-Ray through clear, practical guides.</p>
+            <a href="https://www.youtube.com/@DenisKeman" target="_blank" class="author-youtube">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                Denis Keman on YouTube
+            </a>
+        </div>
+    </div>
+    
+    <!-- Post Footer -->
+    <div class="post-footer">
+        <div class="post-stats">
+            <span class="view-count">{{ views }} views</span>
+        </div>
+        
+        <div class="share-buttons">
+            <span>Share:</span>
+            <a href="https://twitter.com/intent/tweet?text={{ title }}&url={{ request.url }}" target="_blank" class="share-btn share-twitter">Twitter</a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" target="_blank" class="share-btn share-facebook">Facebook</a>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.url }}&title={{ title }}" target="_blank" class="share-btn share-linkedin">LinkedIn</a>
+        </div>
+    </div>
+    
+    <!-- Subscribe Section -->
+    <section class="subscribe-section">
+        <h3>Enjoyed this tutorial?</h3>
+        <p>Subscribe for new 3D CGI tutorials every week!</p>
+        <a href="https://www.youtube.com/@DenisKeman?sub_confirmation=1" target="_blank" class="subscribe-btn">
+            <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            Subscribe on YouTube
+        </a>
+    </section>
+    
+    <!-- Related YouTube Videos -->
+    {% if video_id %}
+    <section class="related-posts">
+        <h3>More from Denis Keman</h3>
+        <div class="related-posts-grid">
+            <div class="youtube-embed">
+                <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- Related Posts -->
+    {% if related_posts %}
+    <section class="related-posts">
+        <h3>Related Posts</h3>
+        <div class="related-posts-grid">
+            {% for post in related_posts %}
+            <article class="related-post-card">
+                {% if post.thumbnail %}
+                <div class="related-post-thumb">
+                    <a href="/blog/{{ post.slug }}">
+                        <img src="{{ post.thumbnail }}" alt="{{ post.title }}">
+                    </a>
+                </div>
+                {% endif %}
+                <div class="related-post-info">
+                    <h4><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h4>
+                    {% if post.categories %}
+                    <div class="related-post-categories">
+                        {% for cat in post.categories %}
+                        <span class="category-badge">{{ cat }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <a href="/blog/{{ post.slug }}" class="read-more">Read more →</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
     <a href="/blog" class="back-link">← Back to Blog</a>
 </article>
+
+<style>
+/* Post Reading Experience */
+.post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-6);
+}
+
+.back-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: var(--space-6);
+    transition: color 0.2s ease;
+}
+
+.back-link:hover {
+    color: var(--text-muted);
+}
+
+/* Clean Surface Container for Post Content */
+.post-glass-container {
+    position: relative;
+    padding: var(--space-8);
+    margin: var(--space-6) 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+body.light-mode .post-glass-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Post Content Typography */
+.post-glass-container .post-content {
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+.post-glass-container .post-content p {
+    margin-bottom: var(--space-4);
+}
+
+.post-glass-container .post-content h2 {
+    color: var(--text-muted);
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-4);
+    font-size: 1.5rem;
+}
+
+.post-glass-container .post-content h3 {
+    color: var(--text-primary);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-3);
+    font-size: 1.25rem;
+}
+
+.post-glass-container .post-content iframe {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: var(--space-4) 0;
+}
+
+/* Author Bio Box */
+.author-bio {
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    margin: var(--space-8) 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.author-avatar {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.author-avatar svg {
+    width: 100%;
+    height: 100%;
+}
+
+.author-info {
+    flex: 1;
+}
+
+.author-name {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+.author-role {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.author-bio-text {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.author-youtube {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.author-youtube:hover {
+    background: rgba(255, 0, 0, 0.3);
+    border-color: rgba(255, 0, 0, 0.5);
+}
+
+body.light-mode .author-bio {
+    background: linear-gradient(135deg, rgba(0, 200, 100, 0.08) 0%, rgba(0, 150, 80, 0.04) 100%);
+    border-color: rgba(0, 200, 100, 0.25);
+}
+
+body.light-mode .author-youtube {
+    background: rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+/* Related Posts Section */
+.related-posts {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border);
+}
+
+.related-posts h3 {
+    margin: 0 0 var(--space-6) 0;
+    font-size: 1.3rem;
+    color: var(--text-muted);
+}
+
+.related-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+}
+
+.related-post-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.related-post-card:hover {
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.1);
+}
+
+.related-post-thumb {
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+}
+
+.related-post-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.related-post-card:hover .related-post-thumb img {
+    transform: scale(1.05);
+}
+
+.related-post-info {
+    padding: var(--space-4);
+}
+
+.related-post-info h4 {
+    margin: 0 0 var(--space-2) 0;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+.related-post-info h4 a {
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.related-post-info h4 a:hover {
+    color: var(--text-muted);
+}
+
+.related-post-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: var(--space-3);
+}
+
+.related-post-info .read-more {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.related-post-info .read-more:hover {
+    opacity: 0.8;
+}
+
+/* Post Footer */
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) 0;
+    margin: var(--space-6) 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.post-stats {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.share-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.share-buttons span {
+    margin-right: var(--space-2);
+}
+
+.share-btn {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.share-twitter {
+    background: #1DA1F2;
+    color: #fff;
+}
+
+.share-twitter:hover {
+    background: #0c8de4;
+}
+
+.share-facebook {
+    background: #4267B2;
+    color: #fff;
+}
+
+.share-facebook:hover {
+    background: #365899;
+}
+
+.share-linkedin {
+    background: #0077B5;
+    color: #fff;
+}
+
+.share-linkedin:hover {
+    background: #005a8e;
+}
+
+/* YouTube Embed */
+.youtube-embed {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+}
+
+.youtube-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Subscribe Section */
+.subscribe-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    text-align: center;
+    margin: var(--space-8) 0;
+}
+
+.subscribe-section h3 {
+    color: var(--text-primary);
+    margin-bottom: var(--space-3);
+}
+
+.subscribe-section p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-6);
+}
+
+.subscribe-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    background: rgba(255,255,255,0.06) !important;
+    color: #fff !important;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.subscribe-btn:hover {
+    background: rgba(255,255,255,0.1) !important;
+    transform: translateY(-1px);
+}
+
+.subscribe-btn svg {
+    width: 20px;
+    height: 20px;
+}
+</style>
 {% endblock %}

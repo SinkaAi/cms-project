@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block title %}Media Library | Admin | DKCGI{% endblock %}
+
+{% block content %}
+<style>
+/* Admin Page Styles */
+.admin-header {
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.admin-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-form {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    max-width: 800px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.625rem 0.875rem;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    transition: border-color 0.15s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-group small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.375rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    background: var(--accent) !important;
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: background 0.15s ease;
+    border: none !important;
+}
+
+.btn:hover {
+    background: var(--accent-hover) !important;
+}
+
+.btn-secondary {
+    background: var(--bg-elevated) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.btn-secondary:hover {
+    border-color: var(--border-hover) !important;
+    color: var(--text-primary) !important;
+    background: var(--bg-surface) !important;
+}
+
+/* Tables */
+.posts-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.posts-table th,
+.posts-table td {
+    padding: 0.875rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.posts-table th {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.posts-table tr:last-child td {
+    border-bottom: none;
+}
+
+.posts-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.light-mode .posts-table tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.posts-table td {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.posts-table code {
+    background: var(--bg-elevated);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--accent);
+}
+
+/* Small buttons */
+.btn-small {
+    display: inline-flex;
+    padding: 0.3rem 0.75rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary) !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.btn-small:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary) !important;
+}
+
+.btn-danger {
+    color: #f87171 !important;
+    border-color: rgba(248, 113, 113, 0.3) !important;
+}
+
+.btn-danger:hover {
+    background: rgba(248, 113, 113, 0.1) !important;
+    border-color: #f87171 !important;
+}
+
+/* Media Gallery */
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.media-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+}
+
+.media-item:hover {
+    border-color: var(--border-hover);
+}
+
+.media-preview {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--bg-elevated);
+}
+
+.media-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.media-info {
+    padding: 0.75rem;
+}
+
+.media-name {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 0 0.25rem 0;
+}
+
+.media-size {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem 0;
+}
+
+.media-actions {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+
+/* Upload Section */
+.upload-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.upload-section h2 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.upload-form {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.upload-note {
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+/* Settings Form */
+.settings-container {
+    max-width: 800px;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.form-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+}
+
+.form-section h3 {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Flash messages */
+.flash {
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.flash.success {
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    color: #4ade80;
+}
+
+.flash.error {
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    color: #f87171;
+}
+
+/* Admin posts list */
+.admin-posts {
+    margin-top: 1.5rem;
+}
+
+.admin-posts h2 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.no-posts {
+    color: var(--text-muted);
+    text-align: center;
+    padding: 2rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+</style>
+<section class="admin-header">
+    <h1>Media Library</h1>
+    <p>Upload and manage image files</p>
+</section>
+
+<section class="admin-actions">
+    <a href="/admin" class="btn btn-secondary">← Back to Admin</a>
+    <a href="/" class="btn btn-secondary">← Back to Site</a>
+</section>
+
+<section class="upload-section">
+    <h2>Upload New File</h2>
+    <form method="POST" action="/admin/media/upload" enctype="multipart/form-data" class="upload-form">
+        <div class="form-group">
+            <label for="file">Select Image</label>
+            <input type="file" id="file" name="file" accept=".png,.jpg,.jpeg,.gif,.webp,.svg" required>
+        </div>
+        <button type="submit" class="btn">Upload File</button>
+    </form>
+    <p class="upload-note"><small>Allowed formats: PNG, JPG, JPEG, GIF, WebP, SVG</small></p>
+</section>
+
+<section class="media-gallery">
+    <h2>Uploaded Files ({{ files|length }})</h2>
+    
+    {% if files %}
+    <div class="media-grid">
+        {% for file in files %}
+        <div class="media-item">
+            {% if file.is_image %}
+            <div class="media-preview">
+                <img src="/uploads/{{ file.name }}" alt="{{ file.name }}">
+            </div>
+            {% else %}
+            <div class="media-preview media-icon">
+                <span>File</span>
+            </div>
+            {% endif %}
+            <div class="media-info">
+                <p class="media-name" title="{{ file.name }}">{{ file.name }}</p>
+                <p class="media-size">{{ (file.size / 1024)|round(1) }} KB</p>
+                <div class="media-actions">
+                    <a href="/uploads/{{ file.name }}" class="btn-small" target="_blank">View</a>
+                    <button class="btn-small btn-danger" onclick="copyUrl('{{ file.name }}')">Copy URL</button>
+                    <a href="/admin/media/delete/{{ file.name }}" class="btn-small btn-danger" onclick="return confirm('Delete this file?')">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-posts">No files uploaded yet. Use the form above to upload your first image!</p>
+    {% endif %}
+</section>
+
+<script>
+function copyUrl(filename) {
+    const url = window.location.origin + '/uploads/' + filename;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('URL copied: ' + url);
+    });
+}
+</script>
+{% endblock %}
