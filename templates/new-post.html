@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Post | DKCGI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <style>
         :root {
             --bg-base: #0C0C0C;
@@ -52,6 +53,20 @@
         .admin-layout {
             display: flex;
             min-height: 100vh;
+        }
+
+        /* Override main's max-width and centering */
+        main {
+            max-width: none !important;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .admin-main {
+            flex: 1;
+            margin-left: 240px !important;
+            padding: 2rem 2.5rem;
+            width: calc(100% - 240px) !important;
         }
 
         .admin-sidebar {
@@ -138,12 +153,6 @@
             border-top: 1px solid var(--border);
         }
 
-        .admin-main {
-            flex: 1;
-            margin-left: 240px;
-            padding: 2rem 2.5rem;
-        }
-
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -193,6 +202,8 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
         }
 
         .form-group {
@@ -488,7 +499,7 @@
             <div class="error-message">{{ error }}</div>
             {% endif %}
 
-            <form method="POST" class="post-form" onsubmit="updateContentSource()">
+            <form method="POST" class="post-form">
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" id="title" name="title" placeholder="Enter post title" required>
@@ -526,44 +537,7 @@
                 
                 <div class="form-group">
                     <label>Content</label>
-                    <div class="editor-wrapper">
-                        <div class="editor-toolbar">
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" data-format="bold" title="Bold (Ctrl+B)"><b>B</b></button>
-                                <button type="button" class="toolbar-btn" data-format="italic" title="Italic (Ctrl+I)"><i>I</i></button>
-                                <button type="button" class="toolbar-btn" data-format="underline" title="Underline (Ctrl+U)"><u>U</u></button>
-                                <button type="button" class="toolbar-btn" data-format="strikethrough" title="Strikethrough"><s>S</s></button>
-                            </div>
-                            <div class="toolbar-group">
-                                <select class="toolbar-btn" data-format="format-block" title="Format" onchange="formatBlock(this.value); this.value='';">
-                                    <option value="">Format</option>
-                                    <option value="p">Paragraph</option>
-                                    <option value="h1">Heading 1</option>
-                                    <option value="h2">Heading 2</option>
-                                    <option value="h3">Heading 3</option>
-                                </select>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" data-format="insertUnorderedList" title="Bullet List">•≡</button>
-                                <button type="button" class="toolbar-btn" data-format="insertOrderedList" title="Numbered List">1.</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" data-format="blockquote" title="Quote">❝</button>
-                                <button type="button" class="toolbar-btn" data-format="code" title="Inline Code">&lt;/&gt;</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" data-format="link" title="Insert Link" onclick="showLinkDialog()">🔗</button>
-                                <button type="button" class="toolbar-btn" data-format="image" title="Insert Image" onclick="promptImage()">🖼️</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" class="toolbar-btn" data-format="undo" title="Undo">↩</button>
-                                <button type="button" class="toolbar-btn" data-format="redo" title="Redo">↪</button>
-                            </div>
-                        </div>
-                        <div class="editor-content" id="editor" contenteditable="true"></div>
-                    </div>
-                    <textarea id="content-source" name="content"></textarea>
-                    <small>Use the toolbar above to format your content, or paste YouTube video URLs directly</small>
+                    <textarea id="editor" name="content"></textarea>
                 </div>
                 
                 <div class="form-actions">
@@ -575,123 +549,31 @@
     </div>
 
     <!-- Link Dialog -->
-    <div class="dialog-overlay" id="linkDialog">
-        <div class="dialog">
-            <h3>Insert Link</h3>
-            <input type="url" id="linkUrl" placeholder="https://example.com">
-            <input type="text" id="linkText" placeholder="Link text">
-            <div class="dialog-actions">
-                <button type="button" class="btn" onclick="hideLinkDialog()">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="insertLink()">Insert</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const editor = document.getElementById('editor');
-        
-        // Toolbar button handlers
-        document.querySelectorAll('.toolbar-btn[data-format]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const format = this.dataset.format;
-                if (format === 'link' || format === 'image') return; // handled separately
-                formatText(format);
-            });
-        });
-
-        function formatText(command) {
-            document.execCommand(command, false, null);
-            editor.focus();
-            updateToolbarState();
-        }
-
-        function formatBlock(tag) {
-            if (tag) {
-                document.execCommand('formatBlock', false, tag);
-                editor.focus();
-            }
-        }
-
-        function showLinkDialog() {
-            const selection = window.getSelection();
-            let selectedText = '';
-            if (selection.rangeCount > 0) {
-                selectedText = selection.toString();
-            }
-            document.getElementById('linkText').value = selectedText;
-            document.getElementById('linkUrl').value = '';
-            document.getElementById('linkDialog').classList.add('show');
-            document.getElementById('linkUrl').focus();
-        }
-
-        function hideLinkDialog() {
-            document.getElementById('linkDialog').classList.remove('show');
-            editor.focus();
-        }
-
-        function insertLink() {
-            const url = document.getElementById('linkUrl').value;
-            const text = document.getElementById('linkText').value || url;
-            if (url) {
-                document.execCommand('createLink', false, url);
-                // Update link text if selected
-                const selection = window.getSelection();
-                if (selection.rangeCount > 0 && selection.toString()) {
-                    const range = selection.getRangeAt(0);
-                    const link = range.commonAncestorContainer.parentElement;
-                    if (link.tagName === 'A') {
-                        link.textContent = text;
-                    }
+<script>
+        tinymce.init({
+            selector: '#editor',
+            plugins: [
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
+                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'table', 'preview', 'help', 'wordcount'
+            ],
+            toolbar: 'undo redo | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table | removeformat help',
+            menubar: 'file edit view insert format table tools help',
+            min_height: 600,
+            resize: true,
+            branding: false,
+            content_style: `
+                body {
+                    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                    font-size: 1rem;
+                    line-height: 1.6;
+                    color: #e0e0e0;
+                    background: #1a1a1a;
+                    padding: 1rem;
                 }
-            }
-            hideLinkDialog();
-        }
-
-        function promptImage() {
-            const url = prompt('Enter image URL:');
-            if (url) {
-                document.execCommand('insertImage', false, url);
-            }
-            editor.focus();
-        }
-
-        function updateToolbarState() {
-            document.querySelectorAll('.toolbar-btn[data-format]').forEach(btn => {
-                const format = btn.dataset.format;
-                if (['bold', 'italic', 'underline', 'strikethrough'].includes(format)) {
-                    btn.classList.toggle('active', document.queryCommandState(format));
-                }
-            });
-        }
-
-        editor.addEventListener('keyup', updateToolbarState);
-        editor.addEventListener('mouseup', updateToolbarState);
-
-        // Keyboard shortcuts
-        editor.addEventListener('keydown', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key.toLowerCase()) {
-                    case 'b': e.preventDefault(); formatText('bold'); break;
-                    case 'i': e.preventDefault(); formatText('italic'); break;
-                    case 'u': e.preventDefault(); formatText('underline'); break;
-                }
-            }
-        });
-
-        // Handle paste - convert to plain text or preserve formatting
-        editor.addEventListener('paste', function(e) {
-            // Allow HTML paste for now
-        });
-
-        function updateContentSource() {
-            document.getElementById('content-source').value = editor.innerHTML;
-        }
-
-        // Submit form on Ctrl+Enter
-        editor.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                document.querySelector('.post-form').submit();
-            }
+            `,
+            skin: 'oxide-dark',
+            content_css: 'dark'
         });
     </script>
 </body>
