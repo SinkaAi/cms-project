@@ -489,7 +489,8 @@ def blog():
     end_idx = start_idx + posts_per_page
     paginated_posts = all_posts_sorted[start_idx:end_idx]
     
-    return render_template('blog.html', 
+    return render_template('blog.html',
+                           settings=load_settings(),
                            posts=paginated_posts, 
                            page=page, 
                            total_pages=total_pages,
@@ -651,7 +652,8 @@ def category_posts(category):
     end_idx = start_idx + posts_per_page
     paginated_posts = posts[start_idx:end_idx]
     
-    return render_template('blog.html', 
+    return render_template('blog.html',
+                           settings=load_settings(),
                            posts=paginated_posts, 
                            category_filter=category, 
                            all_categories=all_cats,
