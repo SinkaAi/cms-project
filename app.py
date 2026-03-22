@@ -736,6 +736,9 @@ def post(slug):
 @app.route('/admin')
 @login_required
 def admin():
+    sort_order = request.args.get('sort', 'newest')
+    from datetime import datetime
+    
     posts = []
     views_data = get_views()
     for filename in os.listdir(POSTS_DIR):
@@ -747,6 +750,7 @@ def admin():
             categories = []
             title = slug.replace('-', ' ').title()
             date = ''
+            post_date = None  # for sorting
             with open(os.path.join(POSTS_DIR, filename), 'r', encoding='utf-8') as f:
                 for line in f:
                     line_stripped = line.strip()
@@ -759,9 +763,13 @@ def admin():
                         categories = [c.strip() for c in cats.split(',')]
                     elif line_stripped.startswith('**By'):
                         # Extract date: "**By Denis | March 20, 2026**"
-                        match = re.search(r'\| (.+?) \*\*', line_stripped)
+                        match = re.search(r'\|\s*(.+?)\s*\*\*', line_stripped)
                         if match:
                             date = match.group(1).strip()
+                            try:
+                                post_date = datetime.strptime(date, '%B %d, %Y')
+                            except:
+                                post_date = datetime.min
                     elif line_stripped.startswith('# '):
                         title = line_stripped[2:].strip()
             
@@ -773,9 +781,26 @@ def admin():
                 'categories': categories,
                 'title': title,
                 'date': date,
+                'post_date': post_date,
                 'views': views_data.get(slug, 0)
             })
-    posts.sort(key=lambda x: x['slug'], reverse=True)
+    
+    # Sort posts by date — undated posts always go last
+    dated = [p for p in posts if p['post_date']]
+    undated = [p for p in posts if p['post_date'] is None]
+    
+    if sort_order == 'oldest':
+        dated.sort(key=lambda x: x['post_date'])
+        posts = dated + undated
+    elif sort_order == 'az':
+        posts.sort(key=lambda x: x['title'].lower())
+    elif sort_order == 'za':
+        posts.sort(key=lambda x: x['title'].lower(), reverse=True)
+    elif sort_order == 'views':
+        posts.sort(key=lambda x: x['views'], reverse=True)
+    else:  # newest (default)
+        dated.sort(key=lambda x: x['post_date'], reverse=True)
+        posts = dated + undated
     
     # Get counts
     total_posts = len(posts)
@@ -795,7 +820,8 @@ def admin():
                          total_posts=total_posts,
                          total_views=total_views,
                          total_categories=total_categories,
-                         total_subscribers=total_subscribers)
+                         total_subscribers=total_subscribers,
+                         sort_order=sort_order)
 
 @app.route('/admin/settings', methods=['GET', 'POST'])
 @login_required
@@ -969,22 +995,26 @@ def edit_post(slug):
     categories = ''
     thumbnail = ''
     
-    # Parse header
+    # Parse header — only look for first --- divider
+    divider_found = False
     for line in lines:
-        if line.startswith('# '):
-            title = line[2:].strip()
-        elif line.strip().startswith('*Status:'):
-            status = line.strip().replace('*Status:', '').replace('*', '').strip()
-        elif line.strip().startswith('*Featured:'):
+        stripped = line.strip()
+        if not divider_found and (stripped == '---' or stripped == '***'):
+            divider_found = True  # Found the header/content divider — past this, don't look for more
+            content_lines = []    # Start fresh for content
+            continue
+        if stripped.startswith('# '):
+            title = stripped[2:].strip()
+        elif stripped.startswith('*Status:'):
+            status = stripped.replace('*Status:', '').replace('*', '').strip()
+        elif stripped.startswith('*Featured:'):
             featured = True
-        elif line.strip().startswith('*Categories:'):
-            categories = line.strip().replace('*Categories:', '').replace('*', '').strip()
-        elif line.strip().startswith('*Thumbnail:'):
-            thumbnail = line.strip().replace('*Thumbnail:', '').replace('*', '').strip()
-        elif line.strip() == '---' or line.strip() == '***':
-            content_lines = []  # Reset - we're past header
-        elif not title and line.startswith('#'):
-            continue  # Skip other markdown headers in content
+        elif stripped.startswith('*Categories:'):
+            categories = stripped.replace('*Categories:', '').replace('*', '').strip()
+        elif stripped.startswith('*Thumbnail:'):
+            thumbnail = stripped.replace('*Thumbnail:', '').replace('*', '').strip()
+        elif not title and stripped.startswith('#'):
+            continue  # Skip markdown headers in header area
         else:
             content_lines.append(line)
     

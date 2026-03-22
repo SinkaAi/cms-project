@@ -1,8 +1,11 @@
 {
-  "studio-lighting-three-point-system": 9,
-  "modeling-adrian-pearsall-chair": 2,
-  "modeling-infinity-mirror-3ds-max-vray": 18,
+  "studio-lighting-three-point-system": 13,
+  "modeling-adrian-pearsall-chair": 3,
+  "modeling-infinity-mirror-3ds-max-vray": 25,
   "texturing-substance-painter-vray": 1,
-  "photorealistic-models-displayland-3ds-max": 1,
-  "first-look-at-vray-5": 2
+  "photorealistic-models-displayland-3ds-max": 2,
+  "first-look-at-vray-5": 2,
+  "hello-world-sorta-copy": 2,
+  "beginners-guide-marvelous-designer": 1,
+  "3ds-max-basic-modeling": 2
 }

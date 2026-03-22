@@ -640,6 +640,13 @@
                 <div class="section-header">
                     <h2>All Posts <span class="count">({{ posts|length }})</span></h2>
                     <div class="bulk-actions">
+                        <select class="bulk-select" onchange="window.location.href='/admin?sort=' + this.value">
+                            <option value="newest" {% if sort_order == 'newest' %}selected{% endif %}>Newest First</option>
+                            <option value="oldest" {% if sort_order == 'oldest' %}selected{% endif %}>Oldest First</option>
+                            <option value="az" {% if sort_order == 'az' %}selected{% endif %}>A → Z</option>
+                            <option value="za" {% if sort_order == 'za' %}selected{% endif %}>Z → A</option>
+                            <option value="views" {% if sort_order == 'views' %}selected{% endif %}>Most Views</option>
+                        </select>
                         <select class="bulk-select">
                             <option>Bulk Actions</option>
                             <option value="delete">Delete</option>

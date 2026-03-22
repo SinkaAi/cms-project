@@ -1,12 +1,51 @@
 {
-    "site_title": "NEXUS",
-    "site_tagline": "Personal Digital HQ",
-    "site_description": "A personal space for learning, building, and growing.",
-    "author_name": "Sinka & Denis",
-    "youtube_url": "https://www.youtube.com/channel/UC5FWcV9We7DCh6IF-maSrrA",
-    "twitter_url": "https://twitter.com/Denis_Keman",
-    "github_url": "https://github.com/SinkaAi",
-    "contact_email": "hello@nexus.local",
+    "site_title": "DKCGI",
+    "site_tagline": "",
+    "site_description": "",
+    "author_name": "",
+    "youtube_url": "",
+    "twitter_url": "",
+    "github_url": "",
+    "contact_email": "",
     "featured_post": "",
-    "posts_per_page": 10
+    "posts_per_page": 10,
+    "hero_title": "Level Up Your Skills",
+    "hero_subtitle": "When The Free Lessons Are Simply Not Enough And You Need More",
+    "hero_button_text": "Premium Content",
+    "hero_button_link": "/courses",
+    "stats": [
+        {
+            "number": "2",
+            "label": "Premium Tutorials"
+        },
+        {
+            "number": "300+",
+            "label": "Free Lessons"
+        },
+        {
+            "number": "60k+",
+            "label": "YouTube Subscribers"
+        },
+        {
+            "number": "15+",
+            "label": "Years Experience"
+        }
+    ],
+    "features": [
+        {
+            "title": "YouTube Channel",
+            "description": "Subscribe for Free",
+            "button_text": "Subscribe",
+            "button_link": "https://www.youtube.com/@DenisKeman",
+            "external": true
+        }
+    ],
+    "features_per_row": 1,
+    "features_count": 3,
+    "features_align": "center",
+    "features_text_align": "center",
+    "latest_posts_count": 6,
+    "footer_brand_text": "",
+    "footer_tagline": "",
+    "footer_copyright": ""
 }
