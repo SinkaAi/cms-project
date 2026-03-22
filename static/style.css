@@ -314,10 +314,32 @@ main {
 
 /* Features */
 .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: var(--features-align, left);
     gap: var(--space-6);
     margin-top: var(--space-12);
+}
+
+.features .feature {
+    flex: 0 0 auto;
+    width: 320px;
+    max-width: calc((100% / var(--features-per-row, 3)) - var(--space-6));
+    text-align: var(--features-text-align, left);
+}
+
+@media (max-width: 768px) {
+    .features .feature {
+        flex: 1 1 calc(50% - var(--space-6));
+        max-width: calc(50% - var(--space-6));
+    }
+}
+
+@media (max-width: 500px) {
+    .features .feature {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
 }
 
 .feature {
@@ -1893,6 +1915,29 @@ body.light-mode .category-badge:hover {
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
 }
 
+body.light-mode .category-badge,
+body.light-mode .category-tag:hover,
+body.light-mode .category-tag.active {
+    color: #007aff;
+}
+
+body.light-mode .read-more,
+body.light-mode .sidebar-widget h3,
+body.light-mode .category-tag:hover,
+body.light-mode .category-tag.active,
+body.light-mode .recent-posts-list a:hover,
+body.light-mode .popular-posts-list a:hover {
+    color: #007aff;
+}
+
+body.light-mode .post-card .read-more {
+    color: #007aff;
+}
+
+body.light-mode .post-card .read-more:hover {
+    color: #0062d6;
+}
+
 body.light-mode .category-tag {
     background: rgba(0, 0, 0, 0.05);
     border-color: rgba(0, 0, 0, 0.1);
@@ -2131,6 +2176,17 @@ body.light-mode .newsletter-form input:focus {
     border-color: var(--accent);
 }
 
+body.light-mode .newsletter-form .btn {
+    background: #007aff !important;
+    border-color: #007aff !important;
+    color: #ffffff !important;
+}
+
+body.light-mode .newsletter-form .btn:hover {
+    background: #0062d6 !important;
+    border-color: #0062d6 !important;
+}
+
 body.light-mode .recent-posts-list a:hover,
 body.light-mode .popular-posts-list a:hover {
     color: #007aff;
@@ -2312,10 +2368,27 @@ body.light-mode .categories-list {
     box-sizing: border-box;
 }
 
+body.light-mode .blog-toolbar .search-form .btn {
+    background: #007aff !important;
+    border-color: #007aff !important;
+    color: #ffffff !important;
+}
+
 /* Search form button - match other buttons */
 .search-form .btn {
     padding: 12px 20px !important;
     font-size: 0.9rem !important;
     font-weight: 600 !important;
     border-radius: 14px !important;
+}
+
+body.light-mode .search-form .btn {
+    background: #007aff !important;
+    border-color: #007aff !important;
+    color: #ffffff !important;
+}
+
+body.light-mode .search-form .btn:hover {
+    background: #0062d6 !important;
+    border-color: #0062d6 !important;
 }

@@ -59,8 +59,8 @@
     <footer>
         <div class="footer-inner">
             <div class="footer-brand">
-                <span class="footer-logo">DKCGI</span>
-                <p>Learn 3D CGI with Denis Keman.<br>3ds Max, V-Ray, and beyond.</p>
+                <span class="footer-logo">{{ settings.get('footer_brand_text', 'DKCGI') }}</span>
+                <p>{{ settings.get('footer_tagline', 'Learn 3D CGI with Denis Keman.') }}</p>
             </div>
             <div class="footer-nav">
                 <span class="footer-heading">Navigate</span>
@@ -71,12 +71,12 @@
             </div>
             <div class="footer-social">
                 <span class="footer-heading">Connect</span>
-                <a href="https://youtube.com" target="_blank">YouTube</a>
-                <a href="https://github.com" target="_blank">GitHub</a>
+                <a href="{{ settings.get('youtube_url', 'https://youtube.com') }}" target="_blank">YouTube</a>
+                <a href="{{ settings.get('github_url', 'https://github.com') }}" target="_blank">GitHub</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 DKCGI. Built by hand from scratch.</p>
+            <p>{{ settings.get('footer_copyright', '&copy; 2026 DKCGI. Built by hand from scratch.')|safe }}</p>
         </div>
     </footer>
 

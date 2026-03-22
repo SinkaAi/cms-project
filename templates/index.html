@@ -6,9 +6,9 @@
 <div class="home-container">
 <!-- Hero Section -->
 <section class="hero animate-fade-in-up">
-    <h1>Learn 3D CGI & V-Ray</h1>
-    <p>Premium courses and free tutorials for 3ds Max, V-Ray, and architectural visualization. Taught by Denis Kemans.</p>
-    <a href="/courses" class="btn btn-primary">Explore Courses</a>
+    <h1>{{ settings.get('hero_title', 'Learn 3D CGI & V-Ray') }}</h1>
+    <p>{{ settings.get('hero_subtitle', 'Premium courses and free tutorials for 3ds Max, V-Ray, and architectural visualization. Taught by Denis Kemans.') }}</p>
+    <a href="{{ settings.get('hero_button_link', '/courses') }}" class="btn btn-primary">{{ settings.get('hero_button_text', 'Explore Courses') }}</a>
 </section>
 
 {% if featured_post %}
@@ -33,42 +33,28 @@
 
 <!-- Stats Section -->
 <section class="stats-section animate-fade-in-up stagger-1">
+    {% for stat in settings.get('stats', [])[:settings.get('stats_count', 4)] %}
     <div class="stat-card">
-        <span class="stat-number">2</span>
-        <span class="stat-label">Premium Courses</span>
+        <span class="stat-number">{{ stat.number }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
     </div>
-    <div class="stat-card">
-        <span class="stat-number">300+</span>
-        <span class="stat-label">Free Lessons</span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-number">60K+</span>
-        <span class="stat-label">Subscribers</span>
-    </div>
-    <div class="stat-card">
-        <span class="stat-number">15+</span>
-        <span class="stat-label">Years Experience</span>
-    </div>
+    {% endfor %}
 </section>
 
 <div class="section-divider"></div>
 
-<section class="features animate-fade-in-up stagger-3">
+<section class="features animate-fade-in-up stagger-3" style="--features-per-row: {{ settings.get('features_per_row', 3) }}; --features-align: {{ settings.get('features_align', 'left') }}; --features-text-align: {{ settings.get('features_text_align', 'left') }}">
+    {% for feature in settings.get('features', [])[:settings.get('features_count', 3)] %}
     <div class="feature">
-        <h3>Blog</h3>
-        <p>Tutorials and insights from Denis Kemans 3D CGI journey with 3ds Max and V-Ray.</p>
-        <a href="/blog" class="btn">Read Posts</a>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+        {% if feature.external %}
+        <a href="{{ feature.button_link }}" target="_blank" class="btn">{{ feature.button_text }}</a>
+        {% else %}
+        <a href="{{ feature.button_link }}" class="btn">{{ feature.button_text }}</a>
+        {% endif %}
     </div>
-    <div class="feature">
-        <h3>Magic Mirror</h3>
-        <p>AI-powered attractiveness analyzer. Built with Flask, deployed on Render.</p>
-        <a href="https://magicmirrior.onrender.com" target="_blank" class="btn">Try It</a>
-    </div>
-    <div class="feature">
-        <h3>Sinka AI</h3>
-        <p>My digital companion page — tracking my growth as an AI learning and building.</p>
-        <a href="http://192.168.10.107:5001/character" target="_blank" class="btn">View Stats</a>
-    </div>
+    {% endfor %}
 </section>
 
 <div class="section-divider"></div>
@@ -106,7 +92,7 @@
 /* Section divider — SuperDesign subtle spacing pattern */
 .section-divider {
     max-width: 1100px;
-    margin: 0 auto;
+    margin: 3rem auto;
     height: 1px;
     background: var(--border);
     opacity: 0.5;
@@ -197,6 +183,19 @@
     color: var(--text-primary);
 }
 
+/* Light mode — warm dark charcoal fill */
+body.light-mode .btn-primary {
+    background: #2D2420 !important;
+    border: 1px solid #2D2420 !important;
+    color: #F5F0EB !important;
+}
+
+body.light-mode .btn-primary:hover {
+    background: #3D3228 !important;
+    border-color: #3D3228 !important;
+    color: #F5F0EB !important;
+}
+
 @media (max-width: 768px) {
     .hero h1 {
         font-size: 2rem;
@@ -226,11 +225,20 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    padding: var(--space-5);
     background: var(--bg-surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
+    overflow: hidden;
     transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.latest-content {
+    padding: 24px !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .latest-card:hover {
@@ -240,28 +248,19 @@
 }
 
 .latest-thumb {
-    width: 100%;
+    width: calc(100% - 32px);
     height: 160px;
-    border-radius: 12px;
     overflow: hidden;
     background: var(--bg-elevated);
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 16px auto 0 auto;
+    border-radius: 10px;
 }
 
-.latest-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.latest-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.latest-thumb + .latest-content {
+    padding-top: 0;
 }
 
 .latest-content h3 {
@@ -288,7 +287,22 @@
 .latest-content p {
     color: var(--text-secondary);
     margin: 0 0 1rem 0;
+    flex: 1;
 }
+
+.latest-content .btn {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+.latest-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+
 
 @media (max-width: 768px) {
     .latest-card {

@@ -1,0 +1,16 @@
+# Runtime data — not tracked
+settings.json
+subscribers.json
+views.json
+
+# Uploads
+static/uploads/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db

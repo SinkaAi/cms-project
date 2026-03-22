@@ -205,7 +205,44 @@ def load_settings():
             'github_url': '',
             'contact_email': '',
             'featured_post': '',
-            'posts_per_page': 10
+            'posts_per_page': 10,
+            'hero_title': 'Learn 3D CGI & V-Ray',
+            'hero_subtitle': 'Premium courses and free tutorials for 3ds Max, V-Ray, and architectural visualization. Taught by Denis Kemans.',
+            'hero_button_text': 'Explore Courses',
+            'hero_button_link': '/courses',
+            'stats': [
+                {'number': '2', 'label': 'Premium Courses'},
+                {'number': '300+', 'label': 'Free Lessons'},
+                {'number': '60K+', 'label': 'Subscribers'},
+                {'number': '15+', 'label': 'Years Experience'}
+            ],
+            'features': [
+                {
+                    'title': 'Blog',
+                    'description': 'Tutorials and insights from Denis Kemans 3D CGI journey with 3ds Max and V-Ray.',
+                    'button_text': 'Read Posts',
+                    'button_link': '/blog',
+                    'external': False
+                },
+                {
+                    'title': 'Magic Mirror',
+                    'description': 'AI-powered attractiveness analyzer. Built with Flask, deployed on Render.',
+                    'button_text': 'Try It',
+                    'button_link': 'https://magicmirrior.onrender.com',
+                    'external': True
+                },
+                {
+                    'title': 'Sinka AI',
+                    'description': 'My digital companion page — tracking my growth as an AI learning and building.',
+                    'button_text': 'View Stats',
+                    'button_link': 'http://192.168.10.107:5001/character',
+                    'external': True
+                }
+            ],
+            'latest_posts_count': 3,
+            'footer_brand_text': 'DKCGI',
+            'footer_tagline': 'Your personal learning hub for 3D CGI, V-Ray, and architectural visualization.',
+            'footer_copyright': '© 2026 DKCGI. Built with 🧠 by Sinka.'
         }
 
 def save_settings(settings):
@@ -244,9 +281,8 @@ def index():
                         break
                 featured_post = {'slug': featured_slug, 'title': title, 'thumbnail': thumbnail}
     
-    # Get latest post for "Latest from Blog" section
-    latest_post = None
-    latest_posts = None
+    # Get latest posts for "Latest from Blog" section
+    latest_posts = []
     posts_list = []
     for filename in os.listdir(POSTS_DIR):
         if filename.endswith('.md'):
@@ -286,7 +322,6 @@ def index():
                 pass
     
     if posts_list:
-        # Sort by date descending (newest first)
         from datetime import datetime
         def get_sort_key(post):
             date_str = post.get('date', '')
@@ -297,13 +332,13 @@ def index():
                     pass
             return datetime.min
         posts_list.sort(key=get_sort_key, reverse=True)
-        latest_posts = posts_list[:3]
+        latest_posts = posts_list[:settings.get('latest_posts_count', 3)]
     
     return render_template('index.html', settings=settings, featured_post=featured_post, latest_posts=latest_posts)
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html', settings=load_settings())
 
 @app.route('/tutorials')
 def tutorials():
@@ -315,7 +350,7 @@ def tutorials():
         {'name': 'Texturing', 'icon': '🎨', 'desc': 'Material creation, procedural textures, and substance painter techniques.'},
         {'name': 'Post-Production', 'icon': '✨', 'desc': 'Color correction, compositing, and finishing touches in Photoshop.'},
     ]
-    return render_template('tutorials.html', categories=categories)
+    return render_template('tutorials.html', settings=load_settings(), categories=categories)
 
 # Character page moved to Sinka Character CMS (http://192.168.10.107:5001)
 
@@ -334,7 +369,7 @@ def login():
             return redirect('/admin')
         else:
             flash('Incorrect password', 'error')
-    return render_template('login.html')
+    return render_template('login.html', settings=load_settings())
 
 @app.route('/logout')
 def logout():
@@ -517,7 +552,7 @@ def search():
                     all_categories.append(cat)
     all_categories = sorted(all_categories)
     
-    return render_template('search.html', results=results, query=query, all_categories=all_categories)
+    return render_template('search.html', settings=load_settings(), results=results, query=query, all_categories=all_categories)
 
 # Admin Search route
 @app.route('/admin/search')
@@ -563,7 +598,7 @@ def admin_search():
                     })
     
     results.sort(key=lambda x: x['slug'], reverse=True)
-    return render_template('admin-search.html', results=results, query=query)
+    return render_template('admin-search.html', settings=load_settings(), results=results, query=query)
 
 @app.route('/category/<category>')
 def category_posts(category):
@@ -686,7 +721,8 @@ def post(slug):
                     if len(related_posts) >= 3:
                         break
     
-    return render_template('post.html', 
+    return render_template('post.html',
+                          settings=load_settings(),
                           content=html, 
                           title=parsed['title'] or slug.replace('-', ' ').title(), 
                           categories=parsed['categories'],
@@ -751,7 +787,8 @@ def admin():
     except:
         total_subscribers = 0
     
-    return render_template('admin.html', 
+    return render_template('admin.html',
+                         settings=load_settings(),
                          posts=posts,
                          total_posts=total_posts,
                          total_views=total_views,
@@ -762,6 +799,33 @@ def admin():
 @login_required
 def settings():
     if request.method == 'POST':
+        # Parse stats
+        stats = []
+        stat_numbers = request.form.getlist('stat_number')
+        stat_labels = request.form.getlist('stat_label')
+        for i in range(len(stat_numbers)):
+            if stat_numbers[i].strip():
+                stats.append({
+                    'number': stat_numbers[i].strip(),
+                    'label': stat_labels[i].strip() if i < len(stat_labels) else ''
+                })
+
+        # Parse features
+        features = []
+        feat_titles = request.form.getlist('feature_title')
+        feat_descs = request.form.getlist('feature_desc')
+        feat_buttons = request.form.getlist('feature_button')
+        feat_links = request.form.getlist('feature_link')
+        for i in range(len(feat_titles)):
+            if feat_titles[i].strip():
+                features.append({
+                    'title': feat_titles[i].strip(),
+                    'description': feat_descs[i].strip() if i < len(feat_descs) else '',
+                    'button_text': feat_buttons[i].strip() if i < len(feat_buttons) else 'Learn More',
+                    'button_link': feat_links[i].strip() if i < len(feat_links) else '#',
+                    'external': feat_links[i].strip().startswith('http') if i < len(feat_links) else False
+                })
+
         settings_data = {
             'site_title': request.form.get('site_title', 'DKCGI'),
             'site_tagline': request.form.get('site_tagline', ''),
@@ -772,7 +836,22 @@ def settings():
             'github_url': request.form.get('github_url', ''),
             'contact_email': request.form.get('contact_email', ''),
             'featured_post': request.form.get('featured_post', ''),
-            'posts_per_page': int(request.form.get('posts_per_page', 10))
+            'posts_per_page': int(request.form.get('posts_per_page', 10)),
+            'hero_title': request.form.get('hero_title', ''),
+            'hero_subtitle': request.form.get('hero_subtitle', ''),
+            'hero_button_text': request.form.get('hero_button_text', ''),
+            'hero_button_link': request.form.get('hero_button_link', ''),
+            'stats': stats,
+            'features': features,
+            'features_per_row': int(request.form.get('features_per_row', 3)),
+            'features_count': int(request.form.get('features_count', 3)),
+            'features_align': request.form.get('features_align', 'left'),
+            'features_text_align': request.form.get('features_text_align', 'left'),
+            'stats_count': int(request.form.get('stats_count', 4)),
+            'latest_posts_count': int(request.form.get('latest_posts_count', 3)),
+            'footer_brand_text': request.form.get('footer_brand_text', ''),
+            'footer_tagline': request.form.get('footer_tagline', ''),
+            'footer_copyright': request.form.get('footer_copyright', '')
         }
         save_settings(settings_data)
         flash('Settings saved!', 'success')
@@ -788,7 +867,7 @@ def settings():
             available_posts.append(slug)
     available_posts.sort(reverse=True)
     
-    return render_template('settings.html', settings=current_settings, posts=available_posts)
+    return render_template('settings.html', page_settings=current_settings, posts=available_posts)
 
 @app.route('/admin/new', methods=['GET', 'POST'])
 @login_required
@@ -802,7 +881,7 @@ def new_post():
         thumbnail = request.form.get('thumbnail', '').strip()
         
         if not title:
-            return render_template('new-post.html', error='Title is required')
+            return render_template('new-post.html', settings=load_settings(), error='Title is required')
         
         slug = title.lower().replace(' ', '-')
         slug = ''.join(c for c in slug if c.isalnum() or c == '-')
@@ -832,7 +911,7 @@ def new_post():
         
         return redirect('/blog')
     
-    return render_template('new-post.html')
+    return render_template('new-post.html', settings=load_settings())
 
 @app.route('/admin/edit/<slug>', methods=['GET', 'POST'])
 @login_required
@@ -853,7 +932,7 @@ def edit_post(slug):
         if not title:
             with open(filepath, 'r', encoding='utf-8') as f:
                 raw_content = f.read()
-            return render_template('edit-post.html', slug=slug, title=title, content=content, error='Title is required')
+            return render_template('edit-post.html', settings=load_settings(), slug=slug, title=title, content=content, error='Title is required')
         
         # Build header with metadata
         header_parts = [f"# {title}"]
@@ -909,7 +988,8 @@ def edit_post(slug):
     
     content = '\n'.join(content_lines).strip()
     
-    return render_template('edit-post.html', 
+    return render_template('edit-post.html',
+                           settings=load_settings(),
                            slug=slug, 
                            title=title, 
                            content=content,
@@ -946,7 +1026,7 @@ def static_page(page_slug):
         abort(404)
     with open(filepath, 'r', encoding='utf-8') as f:
         page_content = f.read()
-    return render_template('page.html', content=page_content, title=page_slug.replace('-', ' ').title())
+    return render_template('page.html', settings=load_settings(), content=page_content, title=page_slug.replace('-', ' ').title())
 
 # Admin: Static Pages Management
 @app.route('/admin/pages')
@@ -965,7 +1045,7 @@ def admin_pages():
                     title = title_match.group(1) if title_match else slug
                 pages.append({'slug': slug, 'title': title, 'filename': filename})
     pages.sort(key=lambda x: x['slug'])
-    return render_template('admin-pages.html', pages=pages)
+    return render_template('admin-pages.html', settings=load_settings(), pages=pages)
 
 @app.route('/admin/pages/new', methods=['GET', 'POST'])
 @login_required
@@ -1042,7 +1122,7 @@ def admin_new_page():
         flash(f'Page "{title}" created successfully!', 'success')
         return redirect('/admin/pages')
     
-    return render_template('admin-edit-page.html', page=None)
+    return render_template('admin-edit-page.html', settings=load_settings(), page=None)
 
 @app.route('/admin/pages/edit/<slug>', methods=['GET', 'POST'])
 @login_required
@@ -1085,7 +1165,7 @@ def admin_edit_page(slug):
     content_match = re.search(r'<div class="page-content">(.*?)</div>', page_html, re.DOTALL)
     content = content_match.group(1).strip() if content_match else ''
     
-    return render_template('admin-edit-page.html', page={'slug': slug, 'title': title, 'content': content})
+    return render_template('admin-edit-page.html', settings=load_settings(), page={'slug': slug, 'title': title, 'content': content})
 
 @app.route('/admin/pages/delete/<slug>')
 @login_required
@@ -1121,7 +1201,7 @@ def admin_media():
                 })
     # Sort by modified date, newest first
     files.sort(key=lambda x: x['modified'], reverse=True)
-    return render_template('admin-media.html', files=files)
+    return render_template('admin-media.html', settings=load_settings(), files=files)
 
 @app.route('/admin/media/upload', methods=['POST'])
 @login_required
