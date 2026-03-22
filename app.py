@@ -12,7 +12,7 @@ from urllib.parse import unquote
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = 'cms-secret-key-change-in-production'
+app.secret_key = os.environ.get('SECRET_KEY', 'cms-dev-key')
 
 # Simple password (change this!)
 ADMIN_PASSWORD = 'sinkaiscool'
