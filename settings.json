@@ -33,14 +33,21 @@
     ],
     "features": [
         {
-            "title": "YouTube Channel",
-            "description": "Subscribe for Free",
-            "button_text": "Subscribe",
-            "button_link": "https://www.youtube.com/@DenisKeman",
+            "title": "Discord Community",
+            "description": "Join 500+ 3D artists. Get feedback, enter challenges, network.",
+            "button_text": "Join Discord",
+            "button_link": "https://discord.gg/P9B3ujY",
             "external": true
+        },
+        {
+            "title": "Gumroad Courses",
+            "description": "Deep-dive courses into V-Ray materials, lighting, and workflows.",
+            "button_text": "Browse Courses",
+            "button_link": "/courses",
+            "external": false
         }
     ],
-    "features_per_row": 1,
+    "features_per_row": 2,
     "features_count": 3,
     "features_align": "center",
     "features_text_align": "center",

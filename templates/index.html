@@ -3,6 +3,278 @@
 {% block title %}Welcome | DKCGI{% endblock %}
 
 {% block content %}
+<style>
+/* ===== DESIGN SYSTEM UPGRADES FOR DKCGI ===== */
+
+/* 1. Strong CTA buttons — coral accent, impossible to miss */
+.btn--cta {
+    background: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 16px rgba(229, 69, 69, 0.35);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+.btn--cta:hover {
+    background: var(--accent-hover) !important;
+    border-color: var(--accent-hover) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 24px rgba(229, 69, 69, 0.5);
+    transform: translateY(-2px);
+}
+
+/* 2. Read More links — fix terrible contrast on dark cards */
+.latest-content .btn,
+.card__link,
+.post-card .btn {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    font-size: 0.8rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+}
+.latest-content .btn:hover,
+.card__link:hover,
+.post-card .btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+}
+
+/* 3. Stats cards — add icons + hover lift + gold accent */
+.stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-2);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-1);
+}
+
+.stat-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+}
+
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* 4. Featured card — gold accent, stronger presence */
+.featured-card {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(212, 168, 83, 0.06) 100%);
+    border: 1px solid rgba(212, 168, 83, 0.3);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    display: flex;
+    gap: var(--space-8);
+    align-items: center;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.featured-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+/* 5. YouTube CTA section — make it a proper full-width call-to-action */
+.youtube-cta {
+    background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(229, 69, 69, 0.08) 100%);
+    border: 1px solid rgba(229, 69, 69, 0.2);
+    border-radius: var(--radius-xl);
+    padding: var(--space-12) var(--space-8);
+    text-align: center;
+    margin: var(--space-8) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.youtube-cta::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse, rgba(229, 69, 69, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.youtube-cta__inner {
+    position: relative;
+    z-index: 1;
+}
+
+.youtube-cta h2 {
+    font-size: 1.8rem;
+    margin-bottom: var(--space-3);
+}
+
+.youtube-cta p {
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 auto var(--space-6);
+}
+
+.youtube-cta__sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: var(--space-3);
+}
+
+/* 6. Footer upgrade — add logo mark, social icons, better structure */
+.footer-logo-mark {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.footer-logo-mark svg {
+    width: 32px;
+    height: 32px;
+}
+
+.footer-logo-mark span {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+
+.footer-social-links {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+}
+
+.footer-social-links a {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+.footer-social-links a:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.footer-social-links svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* 7. Hero section polish */
+.hero {
+    padding: 5rem 2rem 3rem;
+}
+
+.hero h1::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    margin: 1.25rem auto 0;
+}
+
+/* 8. Blog section heading */
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border);
+}
+
+.section-heading h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.section-heading a {
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.section-heading a:hover {
+    color: var(--accent-hover);
+}
+</style>
+
 <div class="home-container">
 <!-- Hero Section -->
 <section class="hero animate-fade-in-up">
@@ -59,9 +331,24 @@
 
 <div class="section-divider"></div>
 
+<!-- YouTube CTA — full-width call to action -->
+<section class="youtube-cta animate-fade-in-up stagger-4">
+    <div class="youtube-cta__inner">
+        <h2>🎬 Denis Keman on YouTube</h2>
+        <p>60,000+ subscribers. 299 tutorials. From beginner basics to advanced V-Ray workflows — it's all there.</p>
+        <a href="https://youtube.com/@DenisKeman" target="_blank" class="btn btn--cta">Watch on YouTube →</a>
+        <p class="youtube-cta__sub">Join the community · New tutorials every week</p>
+    </div>
+</section>
+
+<div class="section-divider"></div>
+
 {% if latest_posts %}
-<section class="latest-post animate-fade-in-up stagger-4">
-    <h2>Latest from Blog</h2>
+<section class="latest-post animate-fade-in-up stagger-5">
+    <div class="section-heading">
+        <h2>Latest from Blog</h2>
+        <a href="/blog">View all posts →</a>
+    </div>
     <div class="latest-grid">
         {% for post in latest_posts %}
         <div class="latest-card">
