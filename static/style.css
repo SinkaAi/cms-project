@@ -639,7 +639,7 @@ footer {
     text-decoration: underline;
 }
 
-.post-content p {
+.post-card .post-content p {
     color: var(--text-secondary);
     margin: 0 0 0.75rem 0;
     font-size: 0.95rem;
@@ -648,6 +648,15 @@ footer {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Full blog post — show all paragraph text */
+.post-glass-container .post-content p {
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+    overflow: visible;
+    text-overflow: unset;
 }
 
 .read-more {
