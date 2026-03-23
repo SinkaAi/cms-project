@@ -145,7 +145,9 @@
         // Show correct toggle label
         function updateToggleLabel() {
             const isLight = document.body.classList.contains('light-mode');
-            document.querySelector('.toggle-label').textContent = isLight ? 'Dark' : 'Light';
+            document.querySelectorAll('.toggle-label').forEach(el => {
+                el.textContent = isLight ? 'Dark' : 'Light';
+            });
         }
         updateToggleLabel();
         

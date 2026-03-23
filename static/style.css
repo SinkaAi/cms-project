@@ -74,6 +74,11 @@ body {
     font-family: var(--font-sans);
     line-height: 1.6;
     min-height: 100vh;
+    overflow-x: hidden;
+}
+
+html {
+    overscroll-behavior: none;
 }
 
 /* DESIGN: Disabled animated grid and particles per design spec */
@@ -2775,6 +2780,7 @@ body.light-mode .search-form .btn:hover {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
+    touch-action: none;
 }
 
 .mobile-menu__overlay--visible {
