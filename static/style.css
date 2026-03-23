@@ -2811,3 +2811,46 @@ body.menu-open {
 @media (min-width: 769px) {
     .hide-desktop { display: none !important; }
 }
+
+/* ===== MOBILE CONTAINMENT — prevent horizontal overflow ===== */
+@media (max-width: 768px) {
+    html {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    body {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .site-header {
+        max-width: 100vw;
+        overflow: hidden;
+    }
+
+    .nav-container {
+        max-width: calc(100vw - 32px);
+        overflow: hidden;
+    }
+
+    .home-container {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    main {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* Also constrain any potential overflow sources */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .latest-thumb img {
+        max-width: 100%;
+    }
+}
