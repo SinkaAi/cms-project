@@ -2625,12 +2625,13 @@ body.light-mode .search-form .btn:hover {
     gap: 5px;
     width: 36px;
     height: 36px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: var(--radius-md);
     cursor: pointer;
     padding: 0;
     transition: all 0.15s ease;
+    flex-shrink: 0;
 }
 
 .hamburger:hover {
@@ -2727,11 +2728,42 @@ body.light-mode .search-form .btn:hover {
     padding: var(--space-6);
     border-top: 1px solid var(--border);
     flex-shrink: 0;
+    background: var(--bg-surface);
 }
 
 .mobile-menu__footer .theme-toggle {
     width: 100%;
     justify-content: center;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-6) !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.mobile-menu__footer .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+}
+
+.light-mode .mobile-menu__footer .theme-toggle {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    color: #1a1a1a !important;
+}
+
+.light-mode .mobile-menu__footer .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.14) !important;
+}
+
+/* Ensure body lock works on iOS */
+@supports (overflow: hidden) {
+    body.menu-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
 }
 
 /* Overlay */

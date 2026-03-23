@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}DKCGI{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -162,17 +162,22 @@
         const closeMenu = document.getElementById('closeMenu');
         const mobileMenu = document.getElementById('mobileMenu');
         const menuOverlay = document.getElementById('menuOverlay');
+        let scrollY = 0;
 
         function openMenu() {
+            scrollY = window.scrollY;
             mobileMenu.classList.add('mobile-menu--open');
             menuOverlay.classList.add('mobile-menu__overlay--visible');
             document.body.classList.add('menu-open');
+            document.body.style.top = `-${scrollY}px`;
         }
 
         function closeMenuFn() {
             mobileMenu.classList.remove('mobile-menu--open');
             menuOverlay.classList.remove('mobile-menu__overlay--visible');
             document.body.classList.remove('menu-open');
+            document.body.style.top = '';
+            window.scrollTo(0, scrollY);
         }
 
         if (hamburger) hamburger.addEventListener('click', openMenu);
