@@ -42,15 +42,46 @@
                 <li><a href="/blog">Blog</a></li>
                 <li><a href="/courses">Courses</a></li>
                 <li><a href="/contact">Contact</a></li>
-                <li><a href="/admin">Admin</a></li>
             </ul>
             <div class="nav-right">
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <button class="theme-toggle hide-mobile" onclick="toggleTheme()" aria-label="Toggle theme">
                     <span class="toggle-label">Dark</span>
+                </button>
+                <button class="hamburger" id="hamburger" aria-label="Open menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
             </div>
         </nav>
     </header>
+
+    <!-- Mobile Menu Drawer -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu__header">
+            <a href="/" class="nav-logo">
+                <span class="site-logo">DKCGI</span>
+            </a>
+            <button class="mobile-menu__close" id="closeMenu" aria-label="Close menu">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 6l12 12M6 18L18 6" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        <ul class="mobile-menu__links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/courses">Courses</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/admin">Admin</a></li>
+        </ul>
+        <div class="mobile-menu__footer">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <span class="toggle-label">Dark</span>
+            </button>
+        </div>
+    </div>
+    <div class="mobile-menu__overlay" id="menuOverlay"></div>
 
     <main>
         {% block content %}{% endblock %}
@@ -120,12 +151,39 @@
         
         // Highlight current page in nav
         const currentPath = window.location.pathname;
-        document.querySelectorAll('.nav-links a').forEach(link => {
+        document.querySelectorAll('.nav-links a, .mobile-menu__links a').forEach(link => {
             if (link.getAttribute('href') === currentPath) {
                 link.classList.add('active');
             }
         });
-        
+
+        // Mobile menu
+        const hamburger = document.getElementById('hamburger');
+        const closeMenu = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function openMenu() {
+            mobileMenu.classList.add('mobile-menu--open');
+            menuOverlay.classList.add('mobile-menu__overlay--visible');
+            document.body.classList.add('menu-open');
+        }
+
+        function closeMenuFn() {
+            mobileMenu.classList.remove('mobile-menu--open');
+            menuOverlay.classList.remove('mobile-menu__overlay--visible');
+            document.body.classList.remove('menu-open');
+        }
+
+        if (hamburger) hamburger.addEventListener('click', openMenu);
+        if (closeMenu) closeMenu.addEventListener('click', closeMenuFn);
+        if (menuOverlay) menuOverlay.addEventListener('click', closeMenuFn);
+
+        // Close on link click
+        document.querySelectorAll('.mobile-menu__links a').forEach(link => {
+            link.addEventListener('click', closeMenuFn);
+        });
+
         // Image Slider
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
